@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <th:block th:replace="~{/admin/common/header ::header}"></th:block>
+</head>
+<body class="no-skin" style="font-family: 'Abel', sans-serif;">
+<th:block th:replace="~{/admin/common/menu :: menu}"></th:block>
+<div class="main-container" id="main-container">
+    <th:block th:replace="~{admin/common/sidebar :: sidebar}"></th:block>
+    <div class="main-content">
+        <div class="main-content-inner">
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>
+                        Dashboard
+                        <small>
+                            <i class="ace-icon fa fa-angle-double-right"></i>
+                            overview &amp; stats
+                        </small>
+                    </h1>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="widget-box">
+                            <div class="widget-header">
+                                <h4 class="widget-title">Thông tin tòa nhà</h4>
+                            </div>
+
+                            <div class="widget-body">
+                                <div class="widget-main">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <form
+                                                    class="form-horizontal"
+                                                    role="form"
+                                                    id="form-edit"
+                                                    method="get"
+                                                    th:action="@{/admin/buildings/edit}"
+                                                    th:object="${building}"
+                                            >
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Tên toà nhà
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="name"
+                                                                name="name"
+                                                                placeholder="Nhập tên tòa nhà..."
+                                                                class="form-control"
+                                                        />
+                                                        <span
+                                                                class="error-message"
+                                                                style="display: none; color: red"
+                                                                id="noName"
+                                                        >Vui lòng nhập tên tòa nhà</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Quận
+                                                    </label>
+                                                    <div class="col-sm-5">
+                                                        <select
+                                                                name="district"
+                                                                id="district"
+                                                                class="form-control"
+                                                        >
+                                                            <option value="">--chọn Quận--</option>
+                                                            <option th:each="d : ${district}" th:value="${d.key}" th:text="${d.value}"></option>
+<!--                                                            th:selected="${d.key == building.district}"-->
+                                                        </select>
+                                                        <span
+                                                                class="error-message"
+                                                                style="display: none; color: red"
+                                                                id="noDistrict"
+                                                        >Vui lòng nhập quận</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Phường
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="ward"
+                                                                name="ward"
+                                                                placeholder="Nhập tên phường..."
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Đường
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="street"
+                                                                name="street"
+                                                                placeholder="Nhập tên đường..."
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Kết cấu
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="structure"
+                                                                name="structure"
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Số tầng hầm
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="number"
+                                                                id="numberOfBasement"
+                                                                name="numberOfBasement"
+                                                                class="form-control"
+                                                        />
+                                                        <span
+                                                                class="error-message"
+                                                                style="display: none; color: red"
+                                                                id="noNumberOfBasement"
+                                                        >Vui lòng nhập số tầng hầm</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Diện tích sàn
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="floorArea"
+                                                                name="floorArea"
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Hướng
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="direction"
+                                                                name="direction"
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Hạng
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="level"
+                                                                name="level"
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Diện tích thuê
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="rentArea"
+                                                                name="rentArea"
+                                                                placeholder="100,200,300"
+                                                                class="form-control"
+                                                        />
+                                                        <span
+                                                                class="error-message"
+                                                                style="display: none; color: red"
+                                                                id="noRentArea"
+                                                        >Vui lòng nhập diện tích thuê</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Giá thuê
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="rentPrice"
+                                                                name="rentPrice"
+                                                                class="form-control"
+                                                        />
+                                                        <span
+                                                                class="error-message"
+                                                                style="display: none; color: red"
+                                                                id="noRentPrice"
+                                                        >Vui lòng nhập giá thuê</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Mô tả giá
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="rentPriceDescription"
+                                                                name="rentPriceDescription"
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Phí dịch vụ
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="serviceFee"
+                                                                name="serviceFee"
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Phí ô tô
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="carFee"
+                                                                name="carFee"
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Phí ngoài giờ
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="overTimeFee"
+                                                                name="overTimeFee"
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Tên quản lý
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="managerName"
+                                                                name="managerName"
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        SĐT quản lý
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="managerPhoneNumber"
+                                                                name="managerPhoneNumber"
+                                                                class="form-control"
+                                                        />
+                                                        <span
+                                                                class="error-message"
+                                                                style="display: none; color: red"
+                                                                id="noManagerPhoneNumber"
+                                                        >SĐT quản lý phải có 10 chữ số và bắt đầu bằng
+                                  số 0</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Loại tòa nhà
+                                                    </label>
+
+                                                    <div class="col-sm-5">
+                                                        <label class="checkbox-inline" th:each="t : ${typeCode}">
+                                                            <input
+                                                                    type="checkbox"
+                                                                    name="typeCode"
+                                                                    th:value="${t.key}"
+                                                                    th:text="${t.value}"
+                                                            />
+<!--                                                            th:checked="${building.typeCode!=null and building.typeCode.contains(t.key)}"-->
+                                                        </label>
+                                                        <span
+                                                                class="error-message"
+                                                                style="display: none; color: red"
+                                                                id="noTypeCode"
+                                                        >Vui lòng checkbox typeCode</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Phí môi giới
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="brokerageFee"
+                                                                name="brokerageFee"
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="form-field-1"
+                                                    >
+                                                        Ghi chú
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="note"
+                                                                name="note"
+                                                                class="form-control"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-actions center">
+                                                    <a th:href="@{/admin/buildings/list}">
+                                                        <button class="btn btn-danger" type="button">
+                                                            <i
+                                                                    class="ace-icon glyphicon glyphicon-remove"
+                                                            ></i>
+                                                            Hủy thao tác
+                                                        </button>
+                                                    </a>
+
+                                                    &nbsp; &nbsp; &nbsp;
+                                                    <button
+                                                            class="btn btn-success"
+                                                            type="button"
+                                                            id="btnAddBuilding"
+                                                    >
+                                                        <i class="ace-icon glyphicon glyphicon-ok"></i>
+                                                        <span  th:text="${building.id != null ? 'Cập nhật thông tin tòa nhà' : 'Thêm tòa nhà'}"></span>
+                                                    </button>
+                                                </div>
+                                                <input type="hidden" name="id" th:value="${building.id}">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.page-content -->
+        </div>
+    </div>
+    <th:block th:replace="~{admin/common/footer :: footer}"></th:block>
+</div>
+<th:block th:replace="~{admin/common/common-scripts :: jquery}"></th:block>
+<script>
+    function resetErrorMessage() {
+        document.getElementById("noName").style.display = "none";
+        document.getElementById("noDistrict").style.display = "none";
+        document.getElementById("noNumberOfBasement").style.display = "none";
+        document.getElementById("noRentArea").style.display = "none";
+        document.getElementById("noRentPrice").style.display = "none";
+        document.getElementById("noTypeCode").style.display = "none";
+        document.getElementById("noManagerPhoneNumber").style.display = "none";
+    }
+
+    function validateDataBuilding(data) {
+        resetErrorMessage();
+        var isValid = true;
+        if (!data["name"] || data["name"].trim() === "") {
+            document.getElementById("noName").style.display = "block";
+            isValid = false;
+        }
+        if (!data["district"] || data["district"].trim() === "") {
+            document.getElementById("noDistrict").style.display = "block";
+            isValid = false;
+        }
+        if (
+            !data["numberOfBasement"] ||
+            data["numberOfBasement"].trim() === ""
+        ) {
+            document.getElementById("noNumberOfBasement").style.display = "block";
+            isValid = false;
+        }
+        if (!data["rentArea"] || data["rentArea"].trim() === "") {
+            document.getElementById("noRentArea").style.display = "block";
+            isValid = false;
+        }
+        if (!data["rentPrice"] || data["rentPrice"].trim() === "") {
+            document.getElementById("noRentPrice").style.display = "block";
+            isValid = false;
+        }
+        if (!data["typeCode"] || data["typeCode"].length === 0) {
+            document.getElementById("noTypeCode").style.display = "block";
+            isValid = false;
+        }
+        var phoneRegex = /^0\d{9}$/;
+        if (
+            !data["managerPhoneNumber"] ||
+            !phoneRegex.test(data["managerPhoneNumber"])
+        ) {
+            document.getElementById("noManagerPhoneNumber").style.display =
+                "block";
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    $("#btnAddBuilding").click(function (e) {
+        e.preventDefault();
+        const data = {}; //khoi tao 1 doi tuong
+        const typeCode = [];
+        const dataForm = $("#form-edit").serializeArray(); // chuyen doi tuong thanh json
+        let method = "POST";
+        $.each(dataForm, function (i, it) {
+            if (it.name != "typeCode") {
+                data[it.name] = it.value;
+            } else {
+                typeCode.push(it.value);
+            }
+        });
+        data["typeCode"] = typeCode;
+        if(data['id'] != null) {
+            method = "PUT";
+        }
+        if (!validateDataBuilding(data)) {
+            alert(
+                "Dữ liệu đầu vào không hợp lệ vui lòng kiểm tra các trường thông tin",
+            );
+        } else {
+            $.ajax({
+                url: "/api/buildings", //api gui ve
+                type: method, // phuong thuc
+                data: JSON.stringify(data), //chuyen doi object thanh json gui xuong server
+                contentType: "application/json", // dinh dang du lieu gui di la Json
+                dataType: "json", // du lieu gui xuong server la JSON
+                success: function (response) {
+                    alert(response.message);
+                },
+                error: function (response) {
+                    alert(response.responseJSON.detail.join("\n"));
+                },
+            });
+        }
+    });
+</script>
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.devon.building.service;
 
 import com.devon.building.entity.User;
 import com.devon.building.repository.AccountRepository;
+import com.devon.building.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,9 +19,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = accountRepository.findAccount(username);
+        User user = userRepository.findByUserName(username);
         System.out.println("User= " + user);
 
         if (user == null) {

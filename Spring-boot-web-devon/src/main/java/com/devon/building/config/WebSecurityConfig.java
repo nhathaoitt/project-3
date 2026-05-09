@@ -40,9 +40,7 @@ public class WebSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/orderList", "/admin/order", "/admin/accountInfo")
-                        .hasAnyRole("EMPLOYEE", "MANAGER")
-                        .requestMatchers("/admin/product").hasRole("MANAGER")
+                        .requestMatchers("/admin/**").hasAnyRole("STAFF", "MANAGER")
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"))
