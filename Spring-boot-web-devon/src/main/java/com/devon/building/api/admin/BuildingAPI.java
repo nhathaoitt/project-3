@@ -3,9 +3,7 @@ package com.devon.building.api.admin;
 import com.devon.building.model.dto.AssignmentBuildingDTO;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
-import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.service.BuildingService;
-import jakarta.persistence.Access;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BuildingAPI {
     private BuildingService buildingService;
+
     @PostMapping
     public ResponseEntity<Object> addBuilding(@RequestBody @Valid BuildingDTO buildingDTO, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
@@ -34,6 +33,7 @@ public class BuildingAPI {
         responseDTO.setMessage("Successfully added Building");
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
+
     @PutMapping
     public ResponseEntity<Object> updateBuilding(@RequestBody @Valid BuildingDTO buildingDTO, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
@@ -52,31 +52,34 @@ public class BuildingAPI {
         responseDTO.setMessage("Successfully updated Building");
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
-    @DeleteMapping("{ids}")
+
+    @DeleteMapping("/{ids}")
     public ResponseEntity<Object> deleteBuilding(@PathVariable List<Long> ids) {
         ResponseDTO responseDTO = new ResponseDTO();
         if (!ids.isEmpty()) {
             // xuong service xu ly
             buildingService.deleteBuilding(ids);
             responseDTO.setMessage("Successfully deleted Building");
-        }else{
+        } else {
             responseDTO.setMessage("Failed to delete Building");
             responseDTO.setDetail(List.of("Deleted failed"));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
         }
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
+
     @GetMapping
     public ResponseEntity<Object> getStaffs(@RequestParam(name = "buildingId", required = true) Long buildingId) {
         return ResponseEntity.status(HttpStatus.OK).body(buildingService.loadStaffs(buildingId));
     }
+
     @PostMapping("/assign")
     public ResponseEntity<Object> assignBuilding(@RequestBody @Valid AssignmentBuildingDTO assignmentBuildingDTO, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
-        if(assignmentBuildingDTO.getBuildingId()!=null || assignmentBuildingDTO.getStaffIds()!=null) {
+        if (assignmentBuildingDTO.getBuildingId() != null || assignmentBuildingDTO.getStaffIds() != null) {
             buildingService.assignBuilding(assignmentBuildingDTO);
             responseDTO.setMessage("Successfully assigned Building");
-        }else{
+        } else {
             responseDTO.setMessage("Failed to assign Building");
             responseDTO.setDetail(List.of("Failed to assign Building"));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);

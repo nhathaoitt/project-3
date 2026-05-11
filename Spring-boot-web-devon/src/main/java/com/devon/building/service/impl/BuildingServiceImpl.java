@@ -15,6 +15,7 @@ import com.devon.building.model.response.BuildingSearchResponse;
 import com.devon.building.model.response.StaffResponseDTO;
 import com.devon.building.repository.AssignmentBuildingRepository;
 import com.devon.building.repository.BuildingRepository;
+import com.devon.building.repository.RentAreaRepository;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.BuildingService;
 import jakarta.persistence.EntityManager;
@@ -22,6 +23,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceContextType;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Transactional
 public class BuildingServiceImpl implements BuildingService {
     private final AssignmentBuildingRepository assignmentBuildingRepository;
@@ -40,6 +42,7 @@ public class BuildingServiceImpl implements BuildingService {
     private final BuildingConvertor buildingConvertor;
     @PersistenceContext(type = PersistenceContextType.TRANSACTION)
     private final EntityManager entityManager;
+    private final RentAreaRepository rentAreaRepository;
 
     @Override
     public ResponseDTO loadStaffs(Long buildingId) {
@@ -72,7 +75,7 @@ public class BuildingServiceImpl implements BuildingService {
             AssignmentBuilding assignmentBuilding = new AssignmentBuilding();
             assignmentBuilding.setBuilding(building);
             assignmentBuilding.setUser(staff);
-            entityManager.persist(assignmentBuilding);
+            assignmentBuildingRepository.saveAndFlush(assignmentBuilding);
         }
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setMessage("assign Building successfully");
@@ -91,7 +94,7 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public BuildingDTO getBuildingById(long id) {
-        Building building = buildingRepository.findById(id);
+        Building building = buildingRepository.findById(id).orElseThrow(() -> new RuntimeException("Building not found"));
         BuildingDTO buildingDTO = buildingConvertor.toBuildingDTO(building);
         return buildingDTO;
     }
@@ -99,8 +102,7 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     public BuildingResponseDTO saveBuilding(BuildingDTO buildingDTO) {
         Building building = buildingConvertor.toBuilding(buildingDTO);
-        entityManager.persist(building);
-        entityManager.flush();
+        buildingRepository.saveAndFlush(building);
         List<Long> listRentAreas = Arrays.stream(buildingDTO.getRentArea().split(","))
                 .map(String::trim)
                 .map(Long::parseLong)
@@ -109,8 +111,7 @@ public class BuildingServiceImpl implements BuildingService {
             RentArea rentArea = new RentArea();
             rentArea.setValue(areas);
             rentArea.setBuilding(building);
-            entityManager.persist(rentArea);
-            entityManager.flush();
+            rentAreaRepository.saveAndFlush(rentArea);
             return rentArea;
         }).toList();
         building.setRentAreas(rentAreas);
@@ -120,17 +121,15 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public BuildingResponseDTO updateBuilding(BuildingDTO buildingDTO) {
-        entityManager.find(Building.class, buildingDTO.getId()).getRentAreas().forEach(entityManager::remove);
+        rentAreaRepository.deleteByBuildingId(buildingDTO.getId());
         Building building = buildingConvertor.toBuilding(buildingDTO);
-        entityManager.merge(building);
-        entityManager.flush();
+        buildingRepository.saveAndFlush(building);
         List<Long> listRentAreas = Arrays.stream(buildingDTO.getRentArea().split(",")).map(String::trim).map(Long::parseLong).toList();
         List<RentArea> rentAreas = listRentAreas.stream().map(areas -> {
             RentArea rentArea = new RentArea();
             rentArea.setValue(areas);
             rentArea.setBuilding(building);
-            entityManager.persist(rentArea);
-            entityManager.flush();
+            rentAreaRepository.saveAndFlush(rentArea);
             return rentArea;
         }).toList();
         building.setRentAreas(rentAreas);
@@ -140,12 +139,11 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public void deleteBuilding(List<Long> ids) {
-        for (Long buildingId : ids) {
-            Building building = buildingRepository.findById(buildingId).orElseThrow(() -> new RuntimeException("Không tìm thấy tòa nhà với building có id" + buildingId));
-            entityManager.find(Building.class, buildingId).getRentAreas().forEach(entityManager::remove);
-            entityManager.remove(building);
-            entityManager.flush();
+        if (!ids.isEmpty()) {
+            for (Long buildingId : ids) {
+                rentAreaRepository.deleteByBuildingId(buildingId);
+                buildingRepository.deleteById(buildingId);
+            }
         }
     }
-
 }

@@ -22,14 +22,14 @@ public class BuildingConvertor {
         BuildingSearchResponse response = modelMapper.map(building, BuildingSearchResponse.class);
         String districtCode = building.getDistrict();
         String districtName = "";
-        if (districtCode != null && districtCode.isBlank()) {
+        if (districtCode != null && !districtCode.isBlank()) {
             try {
                 districtName = District.valueOf(districtCode).getDistrictName();
             } catch (IllegalArgumentException e) {
                 districtName = districtCode;
             }
         }
-        response.setAddress(building.getStreet() + " " + building.getWard() + " " + districtName);
+        response.setAddress(building.getStreet() + ", " + building.getWard() + ", " + districtName);
         response.setRentArea(building.getRentAreas().stream().map(area -> area.getValue().toString()).collect(Collectors.joining(", ")));
         return response;
     }
