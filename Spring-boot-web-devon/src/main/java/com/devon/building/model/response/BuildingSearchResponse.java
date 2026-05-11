@@ -16,11 +16,10 @@ public class BuildingSearchResponse extends AbstractDTO {
     String address;
     Long numberOfBasement;
     String managerName;
-    String managerPhoneNumber;
+    String managerPhone;
     Long floorArea;
     String rentArea;
-    String rentSpace;
-    Long rentPrice;
+    Long price;
     String serviceFee;
     String brokerageFee;
 }

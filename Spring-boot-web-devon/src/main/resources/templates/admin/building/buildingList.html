@@ -234,11 +234,11 @@
                                                         <label>SĐT Quản lý</label>
                                                         <input
                                                                 type="text"
-                                                                id="managerPhoneNumber"
-                                                                name="managerPhoneNumber"
+                                                                id="managerPhone"
+                                                                name="managerPhone"
                                                                 placeholder="Nhập SĐT Quản lý"
                                                                 class="form-control"
-                                                                th:value="${buildingSearchRequest.managerPhoneNumber}"
+                                                                th:value="${buildingSearchRequest.managerPhone}"
                                                         />
                                                     </div>
                                                     <div class="col-xs-2">
@@ -369,7 +369,6 @@
                                 <th>SĐT quản lý</th>
                                 <th>Diện tích sàn</th>
                                 <th>Diện tích thuê</th>
-                                <th>Diện tích trống</th>
                                 <th>Giá thuê</th>
                                 <th>Phí dịch vụ</th>
                                 <th>Phí môi giới</th>
@@ -378,7 +377,7 @@
                             </thead>
 
                             <tbody>
-                            <tr th:each="building : ${result}">
+                            <tr th:each="building : ${result}" th:id="'building_' + ${building.id}" >
                                 <td class="center">
                                     <label class="pos-rel">
                                         <input type="checkbox" class="ace" th:value="${building.id}"/>
@@ -390,11 +389,10 @@
                                 <td th:text="${building.address}"></td>
                                 <td th:text="${building.numberOfBasement}"></td>
                                 <td th:text="${building.managerName}"></td>
-                                <td th:text="${building.managerPhoneNumber}"></td>
+                                <td th:text="${building.managerPhone}"></td>
                                 <td th:text="${building.floorArea}"></td>
                                 <td th:text="${building.rentArea}"></td>
-                                <td th:text="${building.rentSpace}"></td>
-                                <td th:text="${building.rentPrice}"></td>
+                                <td th:text="${building.price}"></td>
                                 <td th:text="${building.serviceFee}"></td>
                                 <td th:text="${building.brokerageFee}"></td>
 
@@ -415,7 +413,7 @@
                                         <button
                                                 class="btn btn-xs btn-danger"
                                                 title="Xóa tòa nhà"
-                                                th:onclick="'deleteBuildings(' + ${building.id} + ')'"
+                                                th:onclick="'deleteBuilding(' + ${building.id} + ')'"
                                         >
                                             <i class="ace-icon fas fa-trash bigger-120"></i>
                                         </button>
@@ -479,8 +477,8 @@
                         </thead>
 
                         <tbody>
-                        <input type="hidden" id="buildingId" value=""/>
                         </tbody>
+                        <input type="hidden" id="buildingId" value=""/>
                     </table>
                 </div>
                 <div class="modal-footer">
@@ -505,7 +503,7 @@
 
     function loadStaff(buildingId){
         $.ajax({
-            url: "/api/buildings?" + buildingId, //api gui ve
+            url: "/api/buildings?buildingId=" + buildingId, //api gui ve
             type: "GET", // phuong thuc
             dataType: "json", // du lieu gui xuong server la JSON
             success: function (response) {
@@ -526,7 +524,7 @@
         });
     }
     $("#btnAssignBuilding").click(function (e) {
-        var object = [];
+        var object = {};
         var buildingId = $("#buildingId").val();
         var staffIds = $("#staff-list tbody input[type='checkbox']:checked")
             .map(function () {
@@ -543,7 +541,7 @@
             dataType: "json", // du lieu gui xuong server la JSON
             success: function (response) {
                 alert(response.message);
-                $('assignmentBuildingModal').modal('hide'); // dong modal sau khi giao toa nha thanh cong
+                $('#assignmentBuildingModal').modal('hide'); // dong modal sau khi giao toa nha thanh cong
             },
             error: function (response) {
                 alert("Có lỗi khi giao tòa nhà. Vui lòng thử lại");
@@ -554,7 +552,6 @@
         e.preventDefault();
         $("#form-search-building").submit();
     });
-
     function deleteBuilding(buildingId) {
         var buildingIds = buildingId;
         deleteBuildings(buildingIds);
@@ -583,6 +580,9 @@
             type: "DELETE",
             dataType: "json", // du lieu gui xuong server la JSON
             success: function (response) {
+                $.each(ids, function (index, item) {
+                    $('#building_' + item).remove();
+                })
                 alert("Xóa tòa nhà thành công");
             },
             error: function (response) {

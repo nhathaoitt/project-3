@@ -1,10 +1,7 @@
 package com.devon.building.model.request;
 
 import com.devon.building.model.dto.AbstractDTO;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
@@ -12,22 +9,24 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class BuildingSearchRequest extends AbstractDTO {
-      String name;
-      Long floorArea;
-      String district;
-      String ward;
-      String street;
-      Long numberOfBasement;
-      String direction;
-      String level;
-      Long rentAreaFrom;
-      Long rentAreaTo;
-      Long rentPriceFrom;
-      Long rentPriceTo;
-      String managerName;
-      String managerPhoneNumber;
-      Long staffId;
-      List<String> typeCode;
+    String name;
+    Long floorArea;
+    String district;
+    String street;
+    String ward;
+    Long numberOfBasement;
+    String direction;
+    String level;
+    Long rentAreaFrom;
+    Long rentAreaTo;
+    Long rentPriceFrom;
+    Long rentPriceTo;
+    String managerName;
+    String managerPhone;
+    Long staffId;
+    List<String> typeCode;
 }

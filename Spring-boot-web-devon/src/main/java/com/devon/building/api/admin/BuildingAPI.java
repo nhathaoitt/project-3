@@ -1,7 +1,9 @@
 package com.devon.building.api.admin;
 
+import com.devon.building.model.dto.AssignmentBuildingDTO;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
+import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.service.BuildingService;
 import jakarta.persistence.Access;
 import jakarta.validation.Valid;
@@ -28,6 +30,7 @@ public class BuildingAPI {
             responseDTO.setDetail(errors);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
         }
+        buildingService.saveBuilding(buildingDTO);
         responseDTO.setMessage("Successfully added Building");
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
@@ -45,6 +48,7 @@ public class BuildingAPI {
             responseDTO.setDetail(List.of("Updated building required id"));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
         }
+        buildingService.updateBuilding(buildingDTO);
         responseDTO.setMessage("Successfully updated Building");
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
@@ -53,6 +57,7 @@ public class BuildingAPI {
         ResponseDTO responseDTO = new ResponseDTO();
         if (!ids.isEmpty()) {
             // xuong service xu ly
+            buildingService.deleteBuilding(ids);
             responseDTO.setMessage("Successfully deleted Building");
         }else{
             responseDTO.setMessage("Failed to delete Building");
@@ -64,5 +69,18 @@ public class BuildingAPI {
     @GetMapping
     public ResponseEntity<Object> getStaffs(@RequestParam(name = "buildingId", required = true) Long buildingId) {
         return ResponseEntity.status(HttpStatus.OK).body(buildingService.loadStaffs(buildingId));
+    }
+    @PostMapping("/assign")
+    public ResponseEntity<Object> assignBuilding(@RequestBody @Valid AssignmentBuildingDTO assignmentBuildingDTO, BindingResult bindingResult) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        if(assignmentBuildingDTO.getBuildingId()!=null || assignmentBuildingDTO.getStaffIds()!=null) {
+            buildingService.assignBuilding(assignmentBuildingDTO);
+            responseDTO.setMessage("Successfully assigned Building");
+        }else{
+            responseDTO.setMessage("Failed to assign Building");
+            responseDTO.setDetail(List.of("Failed to assign Building"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 }

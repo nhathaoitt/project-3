@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "User")
@@ -15,7 +16,7 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends BaseEntity implements Serializable{
+public class User extends BaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -2054386655979281969L;
@@ -47,6 +48,10 @@ public class User extends BaseEntity implements Serializable{
 
     @Column(name = "phone", length = 10, nullable = false)
     private String phone;
+
+    @OneToMany(mappedBy = "user")
+    private List<AssignmentBuilding> assignmentBuildings;
+
 
     @Lob
     @Column(name = "image", length = Integer.MAX_VALUE, nullable = true)

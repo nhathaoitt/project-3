@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductForm {
     private Long id;
     private String name;
-    private double price;
+    private Long price;
  
     private boolean newProduct = false;
  
