@@ -18,4 +18,12 @@ public class GlobalException {
         responseDTO.setDetail(List.of("Data Building invalid"));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleException(Exception ex) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setMessage(ex.getMessage());
+        responseDTO.setDetail(List.of("Error in server"));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDTO);
+    }
 }
