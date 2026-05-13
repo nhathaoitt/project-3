@@ -22,17 +22,19 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
     static void queryJoin(BuildingSearchRequest buildingSearchRequest, StringBuilder sql) {
         Long staffId = buildingSearchRequest.getStaffId();
         Long rentAreaFrom = buildingSearchRequest.getRentAreaFrom();
+        boolean hasFrom = !StringNumberValidation.isNull(rentAreaFrom);
         Long rentAreaTo = buildingSearchRequest.getRentAreaTo();
+        boolean hasTo = !StringNumberValidation.isNull(rentAreaTo);
         if (!StringNumberValidation.isNull(staffId)) {
             sql.append(" JOIN assignmentbuilding ab ON ab.buildingid = b.id ");
             sql.append(" AND ab.staffid = ").append(staffId);
         }
-        if (!StringNumberValidation.isNull(rentAreaFrom) && !StringNumberValidation.isNull(rentAreaTo)) {
+        if (hasFrom || hasTo) {
             sql.append(" JOIN rentarea ra ON ra.buildingid = b.id ");
-            if (!StringNumberValidation.isNull(rentAreaFrom)) {
+            if (hasFrom) {
                 sql.append(" AND ra.value >= ").append(rentAreaFrom).append(" ");
             }
-            if (!StringNumberValidation.isNull(rentAreaTo)) {
+            if (hasTo) {
                 sql.append(" AND ra.value <= ").append(rentAreaTo).append(" ");
             }
         }
@@ -81,7 +83,7 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
         queryJoin(buildingSearchRequest, sql);
         sql.append(" WHERE 1=1 ");
         normalQuery(buildingSearchRequest, sql);
-            Query query = entityManager.createNativeQuery(sql.toString(), Building.class);
-            return query.getResultList();
+        Query query = entityManager.createNativeQuery(sql.toString(), Building.class);
+        return query.getResultList();
     }
 }

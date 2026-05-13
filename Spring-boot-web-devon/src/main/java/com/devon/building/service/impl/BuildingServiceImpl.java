@@ -18,11 +18,7 @@ import com.devon.building.repository.BuildingRepository;
 import com.devon.building.repository.RentAreaRepository;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.BuildingService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.PersistenceContextType;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +36,6 @@ public class BuildingServiceImpl implements BuildingService {
     private final UserRepository userRepository;
     private final BuildingRepository buildingRepository;
     private final BuildingConvertor buildingConvertor;
-    @PersistenceContext(type = PersistenceContextType.TRANSACTION)
-    private final EntityManager entityManager;
     private final RentAreaRepository rentAreaRepository;
 
     @Override
@@ -50,17 +44,7 @@ public class BuildingServiceImpl implements BuildingService {
         List<User> staffs = userRepository.findByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE); // get all staff
         Building building = buildingRepository.findById(buildingId).orElseThrow(() -> new RuntimeException("Không tìm thấy tòa nhà"));
         Set<Long> staffAssignedIds = building.getAssignmentBuildings().stream().map(assignment -> assignment.getUser().getId()).collect(Collectors.toSet()); // lay cac nhan vien dg quan ly toa nha co buildingId = id
-        List<StaffResponseDTO> staffResponseDTOS = new ArrayList<>();
-        for (User user : staffs) {
-            StaffResponseDTO staffResponseDTO = new StaffResponseDTO();
-            staffResponseDTO.setId(user.getId());
-            staffResponseDTO.setUserName(user.getUserName());
-            staffResponseDTO.setChecked("");
-            if (staffAssignedIds.contains(user.getId())) {
-                staffResponseDTO.setChecked("checked");
-            }
-            staffResponseDTOS.add(staffResponseDTO);
-        }
+        List<StaffResponseDTO> staffResponseDTOS = getStaffResponseDTOS(staffs, staffAssignedIds);
         responseDTO.setData(staffResponseDTOS);
         responseDTO.setMessage("load staffs successfully");
         return responseDTO;
@@ -68,7 +52,7 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public ResponseDTO assignBuilding(AssignmentBuildingDTO assignmentBuildingDTO) {
-        assignmentBuildingRepository.deleteByBuildingId(assignmentBuildingDTO.getBuildingId());
+        assignmentBuildingRepository.deleteByBuildingId((assignmentBuildingDTO.getBuildingId()));
         Building building = buildingRepository.findById(assignmentBuildingDTO.getBuildingId()).orElseThrow(() -> new RuntimeException("không tìm thấy tòa nhà"));
         for (Long staffId : assignmentBuildingDTO.getStaffIds()) {
             User staff = userRepository.findById(staffId).orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
@@ -95,55 +79,66 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     public BuildingDTO getBuildingById(long id) {
         Building building = buildingRepository.findById(id).orElseThrow(() -> new RuntimeException("Building not found"));
-        BuildingDTO buildingDTO = buildingConvertor.toBuildingDTO(building);
-        return buildingDTO;
+        return buildingConvertor.toBuildingDTO(building);
     }
 
     @Override
     public BuildingResponseDTO saveBuilding(BuildingDTO buildingDTO) {
         Building building = buildingConvertor.toBuilding(buildingDTO);
         buildingRepository.saveAndFlush(building);
-        List<Long> listRentAreas = Arrays.stream(buildingDTO.getRentArea().split(","))
-                .map(String::trim)
-                .map(Long::parseLong)
-                .toList();
-        List<RentArea> rentAreas = listRentAreas.stream().map(areas -> {
-            RentArea rentArea = new RentArea();
-            rentArea.setValue(areas);
-            rentArea.setBuilding(building);
-            rentAreaRepository.saveAndFlush(rentArea);
-            return rentArea;
-        }).toList();
+        String rentAreaStr = buildingDTO.getRentArea();
+        List<RentArea> rentAreas = formatAndSaveRentAreas(rentAreaStr, building);
         building.setRentAreas(rentAreas);
-        BuildingResponseDTO responseDTO = buildingConvertor.toBuildingResponseDTO(building);
-        return responseDTO;
+        return buildingConvertor.toBuildingResponseDTO(building);
     }
 
     @Override
     public BuildingResponseDTO updateBuilding(BuildingDTO buildingDTO) {
         rentAreaRepository.deleteByBuildingId(buildingDTO.getId());
         Building building = buildingConvertor.toBuilding(buildingDTO);
+        saveBuildingFinal(building);
+        String rentAreaStr = buildingDTO.getRentArea();
+        List<RentArea> rentAreas = formatAndSaveRentAreas(rentAreaStr, building);
+        building.setRentAreas(rentAreas);
+        return buildingConvertor.toBuildingResponseDTO(building);
+    }
+
+    @Override
+    public void deleteBuilding(List<Long> ids) {
+        if (!ids.isEmpty()) {
+            assignmentBuildingRepository.deleteByBuildingIdIn(ids);
+            rentAreaRepository.deleteByBuildingIdIn(ids);
+            buildingRepository.deleteByIdIn(ids);
+        }
+    }
+
+    private static List<StaffResponseDTO> getStaffResponseDTOS(List<User> staffs, Set<Long> staffAssignedIds) {
+        List<StaffResponseDTO> staffResponseDTOS = new ArrayList<>();
+        for (User user : staffs) {
+            StaffResponseDTO staffResponseDTO = new StaffResponseDTO();
+            staffResponseDTO.setId(user.getId());
+            staffResponseDTO.setUserName(user.getUserName());
+            staffResponseDTO.setChecked("");
+            if (staffAssignedIds.contains(user.getId())) {
+                staffResponseDTO.setChecked("checked");
+            }
+            staffResponseDTOS.add(staffResponseDTO);
+        }
+        return staffResponseDTOS;
+    }
+
+    private void saveBuildingFinal(Building building) {
         buildingRepository.saveAndFlush(building);
-        List<Long> listRentAreas = Arrays.stream(buildingDTO.getRentArea().split(",")).map(String::trim).map(Long::parseLong).toList();
-        List<RentArea> rentAreas = listRentAreas.stream().map(areas -> {
+    }
+
+    private List<RentArea> formatAndSaveRentAreas(String rentAreaStr, Building building) {
+        List<Long> listRentAreas = Arrays.stream(rentAreaStr.split(",")).map(String::trim).map(Long::parseLong).toList();
+        return listRentAreas.stream().map(areas -> {
             RentArea rentArea = new RentArea();
             rentArea.setValue(areas);
             rentArea.setBuilding(building);
             rentAreaRepository.saveAndFlush(rentArea);
             return rentArea;
         }).toList();
-        building.setRentAreas(rentAreas);
-        BuildingResponseDTO responseDTO = buildingConvertor.toBuildingResponseDTO(building);
-        return responseDTO;
-    }
-
-    @Override
-    public void deleteBuilding(List<Long> ids) {
-        if (!ids.isEmpty()) {
-            for (Long buildingId : ids) {
-                rentAreaRepository.deleteByBuildingId(buildingId);
-                buildingRepository.deleteById(buildingId);
-            }
-        }
     }
 }
