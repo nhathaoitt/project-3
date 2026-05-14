@@ -42,26 +42,16 @@ public class BuildingConvertor {
     }
 
     public BuildingDTO toBuildingDTO(Building building) {
-        List<String> typeCodeResult = Arrays.stream(building.getTypeCode().split(", ")).filter(typdeCode -> typdeCode != null && !typdeCode.isBlank()).collect(Collectors.toList());
+        List<String> typeCodeResult = Arrays.stream(building.getTypeCode().split(", ")).filter(typeCode -> !typeCode.isBlank()).collect(Collectors.toList());
         BuildingDTO buildingDTO = modelMapper.map(building, BuildingDTO.class);
         buildingDTO.setTypeCode(typeCodeResult);
         buildingDTO.setRentArea(building.getRentAreas().stream().map(area -> area.getValue().toString()).collect(Collectors.joining(", ")));
         return buildingDTO;
     }
 
-    public BuildingResponseDTO toBuildingResponseDTO(Building building) {
+    public void toBuildingResponseDTO(Building building) {
         BuildingResponseDTO responseDTO = modelMapper.map(building, BuildingResponseDTO.class);
-        String districtCode = building.getDistrict();
-        String districtName = "";
-        if (districtCode != null && districtCode.isBlank()) {
-            try {
-                districtName = District.valueOf(districtCode).getDistrictName();
-            } catch (IllegalArgumentException e) {
-                districtName = districtCode;
-            }
-        }
         responseDTO.setRentArea(building.getRentAreas().stream().map(area -> area.getValue().toString()).collect(Collectors.joining(", ")));
-        return responseDTO;
     }
 }
 

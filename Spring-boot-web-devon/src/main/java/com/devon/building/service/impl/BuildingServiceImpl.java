@@ -8,7 +8,6 @@ import com.devon.building.entity.RentArea;
 import com.devon.building.entity.User;
 import com.devon.building.model.dto.AssignmentBuildingDTO;
 import com.devon.building.model.dto.BuildingDTO;
-import com.devon.building.model.dto.BuildingResponseDTO;
 import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
@@ -51,7 +50,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public ResponseDTO assignBuilding(AssignmentBuildingDTO assignmentBuildingDTO) {
+    public void assignBuilding(AssignmentBuildingDTO assignmentBuildingDTO) {
         assignmentBuildingRepository.deleteByBuildingId((assignmentBuildingDTO.getBuildingId()));
         Building building = buildingRepository.findById(assignmentBuildingDTO.getBuildingId()).orElseThrow(() -> new RuntimeException("không tìm thấy tòa nhà"));
         for (Long staffId : assignmentBuildingDTO.getStaffIds()) {
@@ -63,7 +62,6 @@ public class BuildingServiceImpl implements BuildingService {
         }
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setMessage("assign Building successfully");
-        return responseDTO;
     }
 
     @Override
@@ -83,24 +81,24 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public BuildingResponseDTO saveBuilding(BuildingDTO buildingDTO) {
+    public void saveBuilding(BuildingDTO buildingDTO) {
         Building building = buildingConvertor.toBuilding(buildingDTO);
         buildingRepository.saveAndFlush(building);
         String rentAreaStr = buildingDTO.getRentArea();
         List<RentArea> rentAreas = formatAndSaveRentAreas(rentAreaStr, building);
         building.setRentAreas(rentAreas);
-        return buildingConvertor.toBuildingResponseDTO(building);
+        buildingConvertor.toBuildingResponseDTO(building);
     }
 
     @Override
-    public BuildingResponseDTO updateBuilding(BuildingDTO buildingDTO) {
+    public void updateBuilding(BuildingDTO buildingDTO) {
         rentAreaRepository.deleteByBuildingId(buildingDTO.getId());
         Building building = buildingConvertor.toBuilding(buildingDTO);
         saveBuildingFinal(building);
         String rentAreaStr = buildingDTO.getRentArea();
         List<RentArea> rentAreas = formatAndSaveRentAreas(rentAreaStr, building);
         building.setRentAreas(rentAreas);
-        return buildingConvertor.toBuildingResponseDTO(building);
+        buildingConvertor.toBuildingResponseDTO(building);
     }
 
     @Override
