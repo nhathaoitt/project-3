@@ -113,7 +113,7 @@ public class Building implements Serializable {
     @Column(name = "managerphone", length = 255)
     private String managerPhone;
 
-    @OneToMany(mappedBy = "building")
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL,  orphanRemoval = true)
     List<RentArea> rentAreas;
 
     @OneToMany(mappedBy = "building")

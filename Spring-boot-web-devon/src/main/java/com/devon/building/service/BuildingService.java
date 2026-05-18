@@ -12,6 +12,7 @@ public interface BuildingService {
     ResponseDTO loadStaffs(Long buildingId);
 
     void assignBuilding(AssignmentBuildingDTO assignmentBuildingDTO);
+
     List<BuildingSearchResponse> getBuildings(BuildingSearchRequest request);
 
     BuildingDTO getBuildingById(long id);

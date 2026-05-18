@@ -135,7 +135,6 @@ public class BuildingServiceImpl implements BuildingService {
             RentArea rentArea = new RentArea();
             rentArea.setValue(areas);
             rentArea.setBuilding(building);
-            rentAreaRepository.saveAndFlush(rentArea);
             return rentArea;
         }).toList();
     }
