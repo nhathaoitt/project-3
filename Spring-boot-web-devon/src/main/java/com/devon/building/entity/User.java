@@ -49,9 +49,8 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "phone", length = 10, nullable = false)
     private String phone;
 
-    @OneToMany(mappedBy = "user")
-    private List<AssignmentBuilding> assignmentBuildings;
-
+    @ManyToMany(mappedBy = "staffs")
+    private List<Building> buildings;
 
     @Lob
     @Column(name = "image", length = Integer.MAX_VALUE, nullable = true)

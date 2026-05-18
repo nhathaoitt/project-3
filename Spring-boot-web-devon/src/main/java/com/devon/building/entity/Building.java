@@ -113,9 +113,12 @@ public class Building implements Serializable {
     @Column(name = "managerphone", length = 255)
     private String managerPhone;
 
-    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL,  orphanRemoval = true)
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
     List<RentArea> rentAreas;
 
-    @OneToMany(mappedBy = "building")
-    private List<AssignmentBuilding> assignmentBuildings;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "assignmentbuilding",
+            joinColumns = @JoinColumn(name = "buildingid"),
+            inverseJoinColumns = @JoinColumn(name = "staffid"))
+    private List<User> staffs;
 }
