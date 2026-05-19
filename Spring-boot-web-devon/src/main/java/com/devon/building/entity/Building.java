@@ -116,7 +116,7 @@ public class Building implements Serializable {
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
     List<RentArea> rentAreas;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(name = "assignmentbuilding",
             joinColumns = @JoinColumn(name = "buildingid"),
             inverseJoinColumns = @JoinColumn(name = "staffid"))
