@@ -36,5 +36,5 @@ public class RentArea implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "buildingid", nullable = false)
-    Building building;
+    private Building building;
 }

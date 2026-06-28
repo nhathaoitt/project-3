@@ -114,8 +114,7 @@ public class Building implements Serializable {
     private String managerPhone;
 
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<RentArea> rentAreas;
-
+    private List<RentArea> rentAreas;
     @ManyToMany
     @JoinTable(name = "assignmentbuilding",
             joinColumns = @JoinColumn(name = "buildingid"),
