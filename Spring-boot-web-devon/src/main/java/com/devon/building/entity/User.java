@@ -33,7 +33,7 @@ public class User extends BaseEntity implements Serializable {
     private String encrytedPassword;
 
     @Column(name = "Active", length = 1, nullable = false)
-    private boolean active;
+    private Boolean active;
 
     @Column(name = "userrole", length = 20, nullable = false)
     private String userRole;
@@ -51,6 +51,15 @@ public class User extends BaseEntity implements Serializable {
 
     @ManyToMany(mappedBy = "staffs")
     private List<Building> buildings;
+
+    @Column(name = "facebook_account_id")
+    String facebookAccountId;
+
+    @Column(name = "google_account_id")
+    String googleAccountId;
+
+    @Column(name = "github_account_id")
+    String githubAccountId;
 
     @Lob
     @Column(name = "image", length = Integer.MAX_VALUE, nullable = true)

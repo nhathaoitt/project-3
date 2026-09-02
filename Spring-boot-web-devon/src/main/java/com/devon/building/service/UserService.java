@@ -10,6 +10,7 @@ import java.util.Map;
 public interface UserService {
     PaginationResult<User> listUserInfo(String key,int page, int maxResult, int maxNavigationPage);
 
+    User getUserInfo(String userName);
     void save(UserDTO userDTO);
 
     void update(UserDTO userDTO);

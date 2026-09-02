@@ -22,7 +22,7 @@ public class UserAPI {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createUser(@Valid @ModelAttribute UserDTO user, BindingResult bindingResult) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO user, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
         try {
             if (bindingResult.hasErrors()) {

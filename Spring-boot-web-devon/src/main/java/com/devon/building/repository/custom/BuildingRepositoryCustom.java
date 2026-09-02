@@ -2,9 +2,9 @@ package com.devon.building.repository.custom;
 
 import com.devon.building.entity.Building;
 import com.devon.building.model.request.BuildingSearchRequest;
+import com.devon.building.pagination.PaginationResult;
 
-import java.util.List;
 
 public interface BuildingRepositoryCustom {
-    List<Building> findBuilding(BuildingSearchRequest buildingSearchRequest);
+    PaginationResult<Building> findBuilding(BuildingSearchRequest buildingSearchRequest, int page, int maxResult, int maxNavigationPage);
 }

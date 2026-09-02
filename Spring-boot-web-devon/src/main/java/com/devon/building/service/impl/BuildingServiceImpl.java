@@ -8,20 +8,20 @@ import com.devon.building.entity.User;
 import com.devon.building.model.dto.AssignmentBuildingDTO;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
+import com.devon.building.model.dto.UserDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
 import com.devon.building.model.response.StaffResponseDTO;
+import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.BuildingRepository;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.BuildingService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +36,7 @@ public class BuildingServiceImpl implements BuildingService {
     public ResponseDTO loadStaffs(Long buildingId) {
         ResponseDTO responseDTO = new ResponseDTO();
         List<User> staffs = userRepository.findByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE); // get all staff
-        Building building = buildingRepository.findById(buildingId).orElseThrow(() -> new RuntimeException("Không tìm thấy tòa nhà"));
+        Building building = buildingRepository.findById(buildingId).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tòa nhà"));
         Set<Long> staffAssignedIds = building.getStaffs().stream().map(User::getId).collect(Collectors.toSet()); // lay cac nhan vien dg quan ly toa nha co buildingId = id
         List<StaffResponseDTO> staffResponseDTOS = getStaffResponseDTOS(staffs, staffAssignedIds);
         responseDTO.setData(staffResponseDTOS);
@@ -46,50 +46,58 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public void assignBuilding(AssignmentBuildingDTO assignmentBuildingDTO) {
-        Building building = buildingRepository.findById(assignmentBuildingDTO.getBuildingId()).orElseThrow(() -> new RuntimeException("Không tìm thấy tòa nhà"));
+        Building building = buildingRepository.findById(assignmentBuildingDTO.getBuildingId()).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tòa nhà"));
         List<User> staffs = userRepository.findAllById(assignmentBuildingDTO.getStaffIds());
-        building.getStaffs().clear();
-        building.getStaffs().addAll(staffs);
+        building.setStaffs(staffs);
         saveBuildingFinal(building);
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setMessage("assign Building successfully");
     }
 
     @Override
-    public List<BuildingSearchResponse> getBuildings(BuildingSearchRequest request) {
-        List<Building> buildings = buildingRepository.findBuilding(request);
+    public PaginationResult<BuildingSearchResponse> getBuildings(BuildingSearchRequest request, int page, int maxResult, int maxNavigationPage) {
+        PaginationResult<Building> buildings = buildingRepository.findBuilding(request, page, maxResult, maxNavigationPage);
         List<BuildingSearchResponse> result = new ArrayList<>();
-        for (Building building : buildings) {
+        for (Building building : buildings.getList()) {
             result.add(buildingConvertor.toBuildingSearchResponse(building));
         }
-        return result;
+        PaginationResult<BuildingSearchResponse> paginationResult = new PaginationResult<>();
+        paginationResult.setMaxResult(maxResult);
+        paginationResult.setCurrentPage(buildings.getCurrentPage());
+        paginationResult.setTotalPages(buildings.getTotalPages());
+        paginationResult.setList(result);
+        paginationResult.setNavigationPages(buildings.getNavigationPages());
+        paginationResult.setTotalRecords(buildings.getTotalRecords());
+        return paginationResult;
     }
 
     @Override
     public BuildingDTO getBuildingById(long id) {
-        Building building = buildingRepository.findById(id).orElseThrow(() -> new RuntimeException("Building not found"));
+        Building building = buildingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Building not found"));
         return buildingConvertor.toBuildingDTO(building);
     }
 
     @Override
     public void saveBuilding(BuildingDTO buildingDTO) {
         Building building = buildingConvertor.toBuilding(buildingDTO);
-        buildingRepository.saveAndFlush(building);
         String rentAreaStr = buildingDTO.getRentArea();
         List<RentArea> rentAreas = formatAndSaveRentAreas(rentAreaStr, building);
         building.setRentAreas(rentAreas);
+        convertToByte(buildingDTO, building);
+        buildingRepository.saveAndFlush(building);
         buildingConvertor.toBuildingResponseDTO(building);
     }
 
     @Override
     public void updateBuilding(BuildingDTO buildingDTO) {
-        Building building = buildingRepository.findById(buildingDTO.getId()).orElseThrow(() -> new RuntimeException("Building not found"));
+        Building building = buildingRepository.findById(buildingDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Building not found"));
         buildingConvertor.toBuilding(buildingDTO);
         building.getRentAreas().clear();
         String rentAreaStr = buildingDTO.getRentArea();
         List<RentArea> rentAreas = formatAndSaveRentAreas(rentAreaStr, building);
         building.getRentAreas().addAll(rentAreas);
-        saveBuildingFinal(building);
+        convertToByte(buildingDTO, building);
+        buildingRepository.saveAndFlush(building);
         buildingConvertor.toBuildingResponseDTO(building);
     }
 
@@ -127,5 +135,20 @@ public class BuildingServiceImpl implements BuildingService {
             rentArea.setBuilding(building);
             return rentArea;
         }).toList();
+    }
+    private void convertToByte(BuildingDTO buildingDTO, Building building) {
+        try {
+            if (buildingDTO.getBase64Image() != null && !buildingDTO.getBase64Image().isEmpty()) {
+                String base64String = buildingDTO.getBase64Image();
+                if (base64String.contains(",")) {
+                    base64String = base64String.split(",")[1];
+                }
+
+                byte[] imageBytes = Base64.getDecoder().decode(base64String);
+                building.setImage(imageBytes);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid image data", e);
+        }
     }
 }

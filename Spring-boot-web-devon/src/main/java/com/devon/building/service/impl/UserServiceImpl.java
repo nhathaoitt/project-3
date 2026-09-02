@@ -2,7 +2,6 @@ package com.devon.building.service.impl;
 
 import com.devon.building.constant.SystemConstant;
 import com.devon.building.entity.User;
-import com.devon.building.enums.UserRole;
 import com.devon.building.model.dto.UserDTO;
 import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.UserRepository;
@@ -13,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +55,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserInfo(String userName) {
+        return userRepository.findByUserNameAndActiveTrue(userName);
+    }
+
+    @Override
     public void save(UserDTO userDTO) {
         String userName = userDTO.getUserName();
         User user = null;
@@ -72,19 +75,25 @@ public class UserServiceImpl implements UserService {
         user.setFullName(userDTO.getFullName());
         user.setEncrytedPassword(passwordEncoder.encode(SystemConstant.PASSWORD_DEFAULT));
         user.setUserRole(User.ROLE_MANAGER);
-        if (userDTO.getFileData() != null) {
-            byte[] image = null;
-            try {
-                image = userDTO.getFileData().getBytes();
-            } catch (IOException e) {
-                throw new RuntimeException("Invalid image data", e);
-            }
-            if (image != null && image.length > 0) {
-                user.setImage(image);
-            }
-        }
+        convertToByte(userDTO, user);
         entityManager.persist(user);
         entityManager.flush();
+    }
+
+    private void convertToByte(UserDTO userDTO, User user) {
+        try {
+            if (userDTO.getBase64Image() != null && !userDTO.getBase64Image().isEmpty()) {
+                String base64String = userDTO.getBase64Image();
+                if (base64String.contains(",")) {
+                    base64String = base64String.split(",")[1];
+                }
+
+                byte[] imageBytes = Base64.getDecoder().decode(base64String);
+                user.setImage(imageBytes);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid image data", e);
+        }
     }
 
     @Override

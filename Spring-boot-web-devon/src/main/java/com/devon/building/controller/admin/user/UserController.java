@@ -42,10 +42,9 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        final int MAX_RESULT = 5;
-        final int MAX_NAVIGATION_PAGE = 10;
-        PaginationResult<User> paginationResult = userService.listUserInfo(key, page, MAX_RESULT, MAX_NAVIGATION_PAGE);
+        PaginationResult<User> paginationResult = userService.listUserInfo(key, page, SystemConstant.MAX_RESULT, SystemConstant.MAX_NAVIGATION_PAGE);
         modelAndView.addObject("model", paginationResult);
+        modelAndView.addObject("key", key);
         initMessageResponse(modelAndView, request);
         return modelAndView;
     }

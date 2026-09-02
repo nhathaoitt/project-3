@@ -5,6 +5,7 @@ import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
+import com.devon.building.pagination.PaginationResult;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface BuildingService {
 
     void assignBuilding(AssignmentBuildingDTO assignmentBuildingDTO);
 
-    List<BuildingSearchResponse> getBuildings(BuildingSearchRequest request);
+    PaginationResult<BuildingSearchResponse> getBuildings(BuildingSearchRequest request, int page, int maxResult, int maxNavigationPage);
 
     BuildingDTO getBuildingById(long id);
 

@@ -2,14 +2,18 @@ package com.devon.building.config;
 
 
 import com.devon.building.security.CustomSuccessHandler;
-import com.devon.building.service.UserDetailsServiceImpl;
+import com.devon.building.service.impl.CustomOAuth2UserService;
+import com.devon.building.service.impl.CustomOidcUserService;
+import com.devon.building.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -21,7 +25,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class WebSecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -36,25 +39,40 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOidcUserService oidcUserService, CustomOAuth2UserService customOAuth2UserService) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/admin/users/list").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("MANAGER")
+                        .requestMatchers((HttpMethod.DELETE), "/api/buildings/**").hasRole("MANAGER")
                         .requestMatchers("/admin/**").hasAnyRole("STAFF", "MANAGER")
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"))
                 .formLogin(form -> form
-                        .loginPage("/admin/login")
-                        .loginProcessingUrl("/j_spring_security_check")
-                        .successHandler(myAuthenticationSuccessHandler())
+                                .loginPage("/admin/login")
+                                .loginProcessingUrl("/j_spring_security_check")
+                                .successHandler(myAuthenticationSuccessHandler())
 //                        .defaultSuccessUrl("/admin/accountInfo", true)
+                                .failureUrl("/admin/login?incorrectAccount")
+                                .usernameParameter("userName")
+                                .passwordParameter("password")
+                                .permitAll()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/admin/login")
+                        .successHandler(myAuthenticationSuccessHandler())
+
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                                .oidcUserService(oidcUserService))
                         .failureUrl("/admin/login?incorrectAccount")
-                        .usernameParameter("userName")
-                        .passwordParameter("password")
                         .permitAll()
                 )
                 .logout(logout -> logout
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                         .logoutUrl("/admin/logout")
                         .logoutSuccessUrl("/")
                         .permitAll()
@@ -64,7 +82,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(){
+    public AuthenticationSuccessHandler myAuthenticationSuccessHandler() {
         return new CustomSuccessHandler();
     }
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
 >
 <head>
     <meta charset="UTF-8">
@@ -73,6 +74,8 @@
                                     >
                                         <div class="row">
                                             <div class="form-group">
+                                                <input type="hidden" name="page" id="page"
+                                                       th:value="${buildingSearchRequest.page}"/>
                                                 <div class="col-xs-12">
                                                     <div class="col-xs-6">
                                                         <label>Tên tòa nhà</label>
@@ -241,21 +244,25 @@
                                                                 th:value="${buildingSearchRequest.managerPhone}"
                                                         />
                                                     </div>
-                                                    <div class="col-xs-2">
-                                                        <label>Chọn nhân viên</label>
-                                                        <select
-                                                                name="staffId"
-                                                                id="staffId"
-                                                                class="form-control"
-                                                        >
-                                                            <option value="">--chọn Nhân Viên--</option>
-                                                            <option th:each="staff : ${staffs}" th:value="${staff.key}"
-                                                                    th:text="${staff.value}"
-                                                                    th:selected="${staff.key == buildingSearchRequest.staffId}"
+                                                    <th:block sec:authorize="hasRole('ROLE_MANAGER')">
+                                                        <div class="col-xs-2">
+                                                            <label>Chọn nhân viên</label>
+                                                            <select
+                                                                    name="staffId"
+                                                                    id="staffId"
+                                                                    class="form-control"
                                                             >
-                                                            </option>
-                                                        </select>
-                                                    </div>
+                                                                <option value="">--chọn Nhân Viên--</option>
+                                                                <option th:each="staff : ${staffs}"
+                                                                        th:value="${staff.key}"
+                                                                        th:text="${staff.value}"
+                                                                        th:selected="${staff.key == buildingSearchRequest.staffId}"
+                                                                >
+                                                                </option>
+                                                            </select>
+                                                        </div>
+                                                    </th:block>
+
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -320,30 +327,32 @@
                                     </svg>
                                 </button>
                             </a>
-                            <button
-                                    class="btn btn-app btn-danger btn-sm"
-                                    title="Xóa tòa nhà"
-                                    id="btnDeleteBuilding"
-                            >
-                                <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
-                                        fill="currentColor"
-                                        class="bi bi-building-dash"
-                                        viewBox="0 0 16 16"
+                            <th:block sec:authorize="hasRole('ROLE_MANAGER')">
+                                <button
+                                        class="btn btn-app btn-danger btn-sm"
+                                        title="Xóa tòa nhà"
+                                        id="btnDeleteBuilding"
                                 >
-                                    <path
-                                            d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1"
-                                    />
-                                    <path
-                                            d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6.5a.5.5 0 0 1-1 0V1H3v14h3v-2.5a.5.5 0 0 1 .5-.5H8v4H3a1 1 0 0 1-1-1z"
-                                    />
-                                    <path
-                                            d="M4.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"
-                                    />
-                                </svg>
-                            </button>
+                                    <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="20"
+                                            height="20"
+                                            fill="currentColor"
+                                            class="bi bi-building-dash"
+                                            viewBox="0 0 16 16"
+                                    >
+                                        <path
+                                                d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1"
+                                        />
+                                        <path
+                                                d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6.5a.5.5 0 0 1-1 0V1H3v14h3v-2.5a.5.5 0 0 1 .5-.5H8v4H3a1 1 0 0 1-1-1z"
+                                        />
+                                        <path
+                                                d="M4.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"
+                                        />
+                                    </svg>
+                                </button>
+                            </th:block>
                         </div>
                     </div>
                 </div>
@@ -377,7 +386,7 @@
                             </thead>
 
                             <tbody>
-                            <tr th:each="building : ${result}" th:id="'building_' + ${building.id}" >
+                            <tr th:each="building : ${result.getList()}" th:id="'building_' + ${building.id}">
                                 <td class="center">
                                     <label class="pos-rel">
                                         <input type="checkbox" class="ace" th:value="${building.id}"/>
@@ -398,30 +407,45 @@
 
                                 <td>
                                     <div class="hidden-sm hidden-xs btn-group">
-                                        <button
-                                                class="btn btn-xs btn-success"
-                                                title="Giao tòa nhà"
-                                                th:onclick="'assignmentBuilding(' + ${building.id} + ')'"
-                                        >
-                                            <i class="ace-icon fa fa-users"></i>
-                                        </button>
+                                        <th:block sec:authorize="hasRole('ROLE_MANAGER')">
+                                            <button
+                                                    class="btn btn-xs btn-success"
+                                                    title="Giao tòa nhà"
+                                                    th:onclick="'assignmentBuilding(' + ${building.id} + ')'"
+                                            >
+                                                <i class="ace-icon fa fa-users"></i>
+                                            </button>
+                                        </th:block>
                                         <a th:href="@{|/admin/buildings/${building.id}/update|}"
                                            class="btn btn-xs btn-info"
                                            title="Sửa tòa nhà">
                                             <i class="ace-icon fas fa-pencil-alt bigger-120"></i>
                                         </a>
-                                        <button
-                                                class="btn btn-xs btn-danger"
-                                                title="Xóa tòa nhà"
-                                                th:onclick="'deleteBuilding(' + ${building.id} + ')'"
-                                        >
-                                            <i class="ace-icon fas fa-trash bigger-120"></i>
-                                        </button>
+                                        <th:block sec:authorize="hasRole('ROLE_MANAGER')">
+                                            <button
+                                                    class="btn btn-xs btn-danger"
+                                                    title="Xóa tòa nhà"
+                                                    th:onclick="'deleteBuilding(' + ${building.id} + ')'"
+                                            >
+                                                <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                            </button>
+                                        </th:block>
                                     </div>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
+                        <div class="page-navigator" th:if="${result.totalPages > 1}">
+                            <th:block th:each="page: ${result.navigationPages}">
+                                <a th:if="${page != -1}" class="nav-item"
+                                   href="javascript:void(0)"
+                                   th:data-page="${page}"
+                                   th:text="${page}"
+                                   onclick="goToPage(this)"></a>
+
+                                <span th:if="${page == -1}" class="nav-item"> ... </span>
+                            </th:block>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -495,20 +519,26 @@
 </div>
 <th:block th:replace="~{admin/common/common-scripts :: jquery}"></th:block>
 <script>
+    function goToPage(element) {
+        const page = $(element).data("page");
+        $("#page").val(page);
+        $("#form-search-building").submit();
+    }
+
     function assignmentBuilding(buildingId) {
         $("#assignmentBuildingModal").modal();
         $("#buildingId").val(buildingId);
         loadStaff(buildingId);
     }
 
-    function loadStaff(buildingId){
+    function loadStaff(buildingId) {
         $.ajax({
             url: "/api/buildings?buildingId=" + buildingId, //api gui ve
             type: "GET", // phuong thuc
             dataType: "json", // du lieu gui xuong server la JSON
             success: function (response) {
                 let row = "";
-                $.each(response.data, function (index, item){
+                $.each(response.data, function (index, item) {
                     row += '<tr>';
                     row += ' <td class="center" ><label class="pos-rel"> <input type="checkbox" class="ace" value="' + item.id + '" ' + item.checked + '>';
                     row += '<span class="lbl"></span>';
@@ -523,6 +553,7 @@
             },
         });
     }
+
     $("#btnAssignBuilding").click(function (e) {
         var object = {};
         var buildingId = $("#buildingId").val();
@@ -550,8 +581,10 @@
     });
     $("#btnSearchBuilding").click(function (e) {
         e.preventDefault();
+        $("#page").val(1);
         $("#form-search-building").submit();
     });
+
     function deleteBuilding(buildingId) {
         var buildingIds = buildingId;
         deleteBuildings(buildingIds);

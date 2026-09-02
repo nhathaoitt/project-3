@@ -29,4 +29,5 @@ public class BuildingSearchRequest extends AbstractDTO {
     String managerPhone;
     Long staffId;
     List<String> typeCode;
+    int page;
 }

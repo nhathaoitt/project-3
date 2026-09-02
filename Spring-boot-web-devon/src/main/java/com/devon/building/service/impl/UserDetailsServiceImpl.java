@@ -1,9 +1,9 @@
-package com.devon.building.service;
+package com.devon.building.service.impl;
 
 import com.devon.building.entity.User;
 import com.devon.building.repository.AccountRepository;
 import com.devon.building.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,16 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-    @Autowired
-    private AccountRepository accountRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final AccountRepository accountRepository;
+
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserName(username);
+        User user = userRepository.findByUserNameAndActiveTrue(username);
         System.out.println("User= " + user);
 
         if (user == null) {
@@ -35,22 +35,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // EMPLOYEE,MANAGER,..
         String role = user.getUserRole();
 
-        List<GrantedAuthority> grantList = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> grantList = new ArrayList<>();
 
         // ROLE_EMPLOYEE, ROLE_MANAGER
         GrantedAuthority authority = new SimpleGrantedAuthority(role);
 
         grantList.add(authority);
 
-        boolean enabled = user.isActive();
+        boolean enabled = user.getActive();
         boolean accountNonExpired = true;
         boolean credentialsNonExpired = true;
         boolean accountNonLocked = true;
 
-        UserDetails userDetails = (UserDetails) new org.springframework.security.core.userdetails.User(user.getUserName(), //
+        return new org.springframework.security.core.userdetails.User(user.getUserName(), //
                 user.getEncrytedPassword(), enabled, accountNonExpired, //
                 credentialsNonExpired, accountNonLocked, grantList);
-
-        return userDetails;
     }
 }

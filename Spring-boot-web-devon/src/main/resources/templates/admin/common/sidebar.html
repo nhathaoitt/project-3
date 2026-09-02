@@ -1,5 +1,6 @@
 <div th:fragment="sidebar" id="sidebar" class="sidebar responsive ace-save-state"
-     data-sidebar="true" data-sidebar-scroll="true" data-sidebar-hover="true" xmlns:th="http://www.thymeleaf.org">
+     data-sidebar="true" data-sidebar-scroll="true" data-sidebar-hover="true" xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
     <div class="sidebar-shortcuts">
         <div class="sidebar-shortcuts-large">
             <a th:href="@{/}">
@@ -29,7 +30,7 @@
             </ul>
         </li>
     </ul>
-
+    <th:block sec:authorize="hasRole('ROLE_MANAGER')">
     <ul class="nav nav-list">
         <li class="">
             <a href="#" class="dropdown-toggle">
@@ -51,7 +52,7 @@
             </ul>
         </li>
     </ul>
-
+    </th:block>
     <ul class="nav nav-list">
         <li class="">
             <a href="#" class="dropdown-toggle">

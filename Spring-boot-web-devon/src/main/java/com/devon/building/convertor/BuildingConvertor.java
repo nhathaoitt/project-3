@@ -5,6 +5,7 @@ import com.devon.building.enums.District;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.BuildingResponseDTO;
 import com.devon.building.model.response.BuildingSearchResponse;
+import com.devon.building.pagination.PaginationResult;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

@@ -2,6 +2,7 @@ package com.devon.building.repository.custom;
 
 import com.devon.building.entity.Building;
 import com.devon.building.model.request.BuildingSearchRequest;
+import com.devon.building.pagination.PaginationResult;
 import com.devon.building.utils.StringNumberValidation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -45,7 +46,7 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
             Field[] fields = BuildingSearchRequest.class.getDeclaredFields();
             for (Field field : fields) {
                 String name = field.getName();
-                if (!name.equals("staffId") && !name.startsWith("rentArea") && !name.startsWith("rentPrice") && !name.equals("typeCode")) {
+                if (!name.equals("staffId") && !name.startsWith("rentArea") && !name.startsWith("rentPrice") && !name.equals("typeCode") && !name.equals("page")) {
                     field.setAccessible(true);
                     Object value = field.get(buildingSearchRequest);
                     if (value != null && !value.toString().trim().isEmpty()) {
@@ -78,12 +79,12 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
     }
 
     @Override
-    public List<Building> findBuilding(BuildingSearchRequest buildingSearchRequest) {
+    public PaginationResult<Building> findBuilding(BuildingSearchRequest buildingSearchRequest, int page, int maxResult, int maxNavigationPage) {
         StringBuilder sql = new StringBuilder("select distinct b.* from Building b");
         queryJoin(buildingSearchRequest, sql);
         sql.append(" WHERE 1=1 ");
         normalQuery(buildingSearchRequest, sql);
         Query query = entityManager.createNativeQuery(sql.toString(), Building.class);
-        return query.getResultList();
+        return new PaginationResult<>(query, query.getResultList().size(),page, maxResult, maxNavigationPage);
     }
 }

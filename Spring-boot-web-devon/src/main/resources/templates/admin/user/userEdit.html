@@ -181,22 +181,21 @@
         };
 
         if (!validateData(dataObj)) return;
+        $('#avatar').show();
+        const fileInput = $('#exampleFormControlFile1')[0].files[0];
+        if (fileInput) {
+            try {
+                dataObj.base64Image = await toBase64(fileInput);
+                dataObj.imageName = fileInput.name;
+            } catch (error) {
+                console.error(error);
+                alert("Lỗi đọc file ảnh");
+                return;
+            }
+        }
         if (dataObj.id === "" || dataObj.id === null) {
-            $('#avatar').show();
             saveUser(dataObj);
         } else {
-            $('#avatar').show();
-            const fileInput = $('#exampleFormControlFile1')[0].files[0];
-            if (fileInput) {
-                try {
-                    dataObj.base64Image = await toBase64(fileInput);
-                    dataObj.imageName = fileInput.name;
-                } catch (error) {
-                    console.error(error);
-                    alert("Lỗi đọc file ảnh");
-                    return;
-                }
-            }
             updateUser(dataObj);
         }
     });
@@ -224,8 +223,8 @@
         $.ajax({
             url: '/users',
             type: 'POST',
-            data: formData,
-            contentType: false,
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
             processData: false,
             success: function (res) {
                 alert(res.message);

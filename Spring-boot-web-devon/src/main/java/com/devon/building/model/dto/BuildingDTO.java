@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -46,4 +47,8 @@ public class BuildingDTO extends AbstractDTO{
     private Long price;
     private String serviceFee;
     private Long brokerageFee;
+    private String base64Image;
+    private String imageName;
+    private byte[] image;
+    private MultipartFile fileData;
 }
