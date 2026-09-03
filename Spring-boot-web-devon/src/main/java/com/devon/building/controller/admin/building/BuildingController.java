@@ -14,7 +14,6 @@ import com.devon.building.utils.SecurityUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +32,7 @@ public class BuildingController {
     @GetMapping("/list")
     public String getBuildings(@RequestParam(value = "page", defaultValue = "1") String pagetr, @ModelAttribute BuildingSearchRequest buildingSearchRequest, Model model) {
         int page = 1;
-        try{
+        try {
             page = Integer.parseInt(pagetr);
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,7 +64,7 @@ public class BuildingController {
         if (SecurityUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)) {
             User user = userService.getUserInfo(SecurityUtils.getCurrentUsername());
             boolean isAssigned = user.getBuildings().stream().anyMatch(building -> building.getId().equals(id));
-            if(!isAssigned){
+            if (!isAssigned) {
                 return "404";
             }
         }
@@ -75,6 +74,7 @@ public class BuildingController {
         model.addAttribute("building", buildingDTO);
         return "admin/building/buildingEdit";
     }
+
     @GetMapping("/images")
     public void productImage(HttpServletRequest request, HttpServletResponse response, Model model, @RequestParam(value = "id", required = false) Long id) throws IOException {
         BuildingDTO building = buildingService.getBuildingById(id);
