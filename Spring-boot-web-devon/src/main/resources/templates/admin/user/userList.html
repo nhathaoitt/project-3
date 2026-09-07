@@ -132,13 +132,13 @@
                                                    th:value="${u.id}"
                                                    class="check-box-element"/>
                                         </td>
-                                        <td th:text="${u.userName}"></td>
+                                        <td th:text="${u.username}"></td>
                                         <td th:text="${u.fullName}"></td>
                                         <td th:text="${u.phone}"></td>
                                         <td class="text-center">
                                             <sec:authorize access="hasRole('MANAGER')">
                                                 <a class="btn btn-sm btn-primary"
-                                                   th:href="@{|/admin/users/${u.userName}|}"
+                                                   th:href="@{|/admin/users/${u.username}|}"
                                                    title="Cập nhật người dùng">
                                                     <i class="fa fa-pencil-square-o"></i>
                                                 </a>

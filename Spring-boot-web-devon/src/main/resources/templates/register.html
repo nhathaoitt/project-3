@@ -36,8 +36,8 @@
 
                     <!-- Form -->
                     <form id="registerForm"
-                          th:action="@{/api/user/register}"
-                          method="post">
+                          th:action="@{/admin/register}"
+                          th:object="${userRegister}">
 
                         <!-- Full Name -->
                         <div class="form-group">
@@ -47,7 +47,14 @@
                             <input type="text" id="fullName" name="fullName"
                                    class="form-control"
                                    placeholder="Enter your full name"
-                                   required>
+                                   required
+                                th:value="${userRegister.fullName}">
+                            <span
+                                    class="error-message"
+                                    style="display: none; color: red"
+                                    id="noFullName"
+                            >Vui lòng nhập họ và tên đầy đủ</span
+                            >
                         </div>
 
                         <!-- Username -->
@@ -58,7 +65,14 @@
                             <input type="text" id="username" name="username"
                                    class="form-control"
                                    placeholder="Choose a username"
-                                   required>
+                                   required
+                                   th:value="${userRegister.userName}">
+                            <span
+                                    class="error-message"
+                                    style="display: none; color: red"
+                                    id="noUsername"
+                            >Vui lòng nhập tên người dùng</span
+                            >
                         </div>
 
                         <!-- Password -->
@@ -71,6 +85,12 @@
                                        name="password" class="form-control"
                                        placeholder="Create a strong password"
                                        required>
+                                <span
+                                        class="error-message"
+                                        style="display: none; color: red"
+                                        id="noPassword"
+                                >Vui lòng nhập mật khẩu</span
+                                >
                                 <button type="button" class="password-toggle"
                                         onclick="togglePassword('password')">
                                     <i class="fas fa-eye"></i>
@@ -89,6 +109,12 @@
                                        class="form-control"
                                        placeholder="Re-enter your password"
                                        required>
+                                <span
+                                        class="error-message"
+                                        style="display: none; color: red"
+                                        id="noConfirmPassword"
+                                >Vui lòng nhập lại mật khẩu</span
+                                >
                                 <button type="button" class="password-toggle"
                                         onclick="togglePassword('confirmPassword')">
                                     <i class="fas fa-eye"></i>
@@ -113,7 +139,7 @@
                         </div>
 
                         <!-- Submit -->
-                        <button class="register-btn" type="submit">
+                        <button class="register-btn" type="submit" id="btnRegister">
                             <i class="fas fa-user-plus me-2"></i>Register
                         </button>
                     </form>
@@ -148,106 +174,171 @@
 <th:block th:replace="~{admin/common/common-scripts :: jquery}"></th:block>
 <!--JavaScript for password toggle-->
 <script>
-    function togglePassword(fieldId) {
-        const field = document.getElementById(fieldId);
-        const toggle = field.nextElementSibling;
-        const icon = toggle.querySelector('i');
-
-        if (field.type === 'password') {
-            field.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            field.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
+    // function togglePassword(fieldId) {
+    //     const field = document.getElementById(fieldId);
+    //     const toggle = field.nextElementSibling;
+    //     const icon = toggle.querySelector('i');
+    //
+    //     if (field.type === 'password') {
+    //         field.type = 'text';
+    //         icon.classList.remove('fa-eye');
+    //         icon.classList.add('fa-eye-slash');
+    //     } else {
+    //         field.type = 'password';
+    //         icon.classList.remove('fa-eye-slash');
+    //         icon.classList.add('fa-eye');
+    //     }
+    // }
+    //
+    // // Form validation
+    // document.getElementById('registerForm').addEventListener('submit', function (e) {
+    //     e.preventDefault();
+    //
+    //     const password = document.getElementById('password').value;
+    //     const confirmPassword = document.getElementById('confirmPassword').value;
+    //     const isAgreeTerms = document.getElementById('isAgreeTerms').checked;
+    //
+    //     if (!isAgreeTerms) {
+    //         alert('Bạn phải đồng ý với điều khoản cộng đồng!');
+    //         return false;
+    //     }
+    //
+    //     const fullName = document.getElementById('fullName').value.trim();
+    //     if (fullName.length < 2) {
+    //         alert('Tên phải có ít nhất 2 ký tự!');
+    //         return false;
+    //     }
+    //
+    //     const username = document.getElementById('username').value.trim();
+    //     if (username.length < 3) {
+    //         alert('Tên đăng nhập phải có ít nhất 3 ký tự!');
+    //         return false;
+    //     }
+    //
+    //     if (password !== confirmPassword) {
+    //         alert('Mật khẩu không khớp!');
+    //         return false;
+    //     }
+    //
+    //     if (password.length < 6) {
+    //         alert('Mật khẩu phải chứa ít nhất 6 ký tự!');
+    //         return false;
+    //     }
+    //
+    //     const formData = {
+    //         fullName: fullName,
+    //         username: username,
+    //         password: password,
+    //         confirmPassword: confirmPassword
+    //     };
+    //
+    //     // Add loading effect to register button
+    //     const registerBtn = document.querySelector('.register-btn');
+    //     registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+    //     registerBtn.disabled = true;
+    //
+    //     // Send AJAX request
+    //     fetch('/api/user/register', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify(formData)
+    //     })
+    //         .then(response => {
+    //             if (!response.ok) {
+    //                 return response.text().then(text => {
+    //                     throw new Error(text || 'Đăng ký thất bại');
+    //                 });
+    //             }
+    //             return response.json();
+    //         })
+    //         .then(data => {
+    //             alert('Đăng ký thành công. Vui lòng đăng nhập.');
+    //             window.location.href = '/login';
+    //         })
+    //         .catch(error => {
+    //             var message = "Đăng ký thất bại!";
+    //             try {
+    //                 // Nếu message là JSON, lấy ra phần message
+    //                 const errorJson = JSON.parse(error.message);
+    //                 if (errorJson.message) {
+    //                     message = errorJson.message;
+    //                 }
+    //             } catch (e) {
+    //                 // Nếu không phải JSON thì hiện mặc định
+    //                 message = error.message || message;
+    //             }
+    //             alert(message);
+    //             // Reset button
+    //             registerBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Register';
+    //             registerBtn.disabled = false;
+    //         });
+    // });
+    function resetErrorMessage() {
+        document.getElementById("noFullName").style.display = "none";
+        document.getElementById("noUsername").style.display = "none";
+        document.getElementById("noPassword").style.display = "none";
+        document.getElementById("noConfirmPassword").style.display = "none";
     }
-
-    // Form validation
-    document.getElementById('registerForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-
+    function validateData(data){
+        resetErrorMessage();
+        var isValid = true;
+        if (!data["fullName"] || data["fullName"].trim() === "") {
+            document.getElementById("noFullName").style.display = "block";
+            isValid = false;
+        }
+        if (!data["username"] || data["username"].trim() === "") {
+            document.getElementById("noUsername").style.display = "block";
+            isValid = false;
+        }
+        if (!data["password"] || data["password"].trim() === "") {
+            document.getElementById("noPassword").style.display = "block";
+            isValid = false;
+        }
+        if (!data["confirmPassword"] || data["confirmPassword"].trim() === "") {
+            document.getElementById("noConfirmPassword").style.display = "block";
+            isValid = false;
+        }
+        return isValid;
+    }
+    $("#btnRegister").click(function (e){
+       e.preventDefault()
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
         const isAgreeTerms = document.getElementById('isAgreeTerms').checked;
-
+        const data = {};
+        const dataForm = $("#registerForm").serializeArray();
+        $.each(dataForm, function(i, it){
+           data[it.name] = it.value;
+        });
         if (!isAgreeTerms) {
             alert('Bạn phải đồng ý với điều khoản cộng đồng!');
             return false;
         }
-
-        const fullName = document.getElementById('fullName').value.trim();
-        if (fullName.length < 2) {
-            alert('Tên phải có ít nhất 2 ký tự!');
-            return false;
-        }
-
-        const username = document.getElementById('username').value.trim();
-        if (username.length < 3) {
-            alert('Tên đăng nhập phải có ít nhất 3 ký tự!');
-            return false;
-        }
-
-        if (password !== confirmPassword) {
+        if(password !== confirmPassword) {
             alert('Mật khẩu không khớp!');
             return false;
         }
-
-        if (password.length < 6) {
-            alert('Mật khẩu phải chứa ít nhất 6 ký tự!');
-            return false;
+        if (!validateData(data)){
+            alert("Vui lòng nhập đầy đủ thông tin đăng ký");
+            return;
         }
-
-        const formData = {
-            fullName: fullName,
-            username: username,
-            password: password,
-            confirmPassword: confirmPassword
-        };
-
-        // Add loading effect to register button
-        const registerBtn = document.querySelector('.register-btn');
-        registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-        registerBtn.disabled = true;
-
-        // Send AJAX request
-        fetch('/api/user/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text || 'Đăng ký thất bại');
-                    });
+        else{
+            $.ajax({
+                url: "/users/register", //api gui ve
+                type: "POST", // phuong thuc
+                data: JSON.stringify(data), //chuyen doi object thanh json gui xuong server
+                contentType: "application/json", // dinh dang du lieu gui di la Json
+                dataType: "json", // du lieu gui xuong server la JSON
+                success: function (response){
+                    alert(response.message);
+                },
+                error: function (respone){
+                    alert(respone.responseJSON.detail.join("\n"))
                 }
-                return response.json();
-            })
-            .then(data => {
-                alert('Đăng ký thành công. Vui lòng đăng nhập.');
-                window.location.href = '/login';
-            })
-            .catch(error => {
-                var message = "Đăng ký thất bại!";
-                try {
-                    // Nếu message là JSON, lấy ra phần message
-                    const errorJson = JSON.parse(error.message);
-                    if (errorJson.message) {
-                        message = errorJson.message;
-                    }
-                } catch (e) {
-                    // Nếu không phải JSON thì hiện mặc định
-                    message = error.message || message;
-                }
-                alert(message);
-                // Reset button
-                registerBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Register';
-                registerBtn.disabled = false;
             });
+        }
     });
 </script>
 </body>

@@ -4,6 +4,7 @@ import com.devon.building.entity.Building;
 import com.devon.building.form.ProductForm;
 import com.devon.building.model.OrderDetailInfo;
 import com.devon.building.model.OrderInfo;
+import com.devon.building.model.dto.UserRegisterDTO;
 import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.OrderRepository;
 import com.devon.building.repository.ProductRepository;
@@ -54,6 +55,14 @@ public class AdminController {
     @GetMapping(value = {"/admin/login"})
     public String login(Model model) {
         return "login";
+    }
+
+    // GET: Show Register Page
+    @GetMapping("/admin/register")
+    public String register(Model model) {
+        UserRegisterDTO userRegisterDTO = new UserRegisterDTO();
+        model.addAttribute("userRegister", userRegisterDTO);
+        return "register";
     }
 
     @GetMapping(value = {"/admin/accountInfo"})

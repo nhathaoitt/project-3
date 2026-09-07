@@ -612,13 +612,13 @@
             url: "/api/buildings/" + ids.join(","),
             type: "DELETE",
             dataType: "json", // du lieu gui xuong server la JSON
-            success: function (response) {
+            success: function () {
                 $.each(ids, function (index, item) {
                     $('#building_' + item).remove();
                 })
                 alert("Xóa tòa nhà thành công");
             },
-            error: function (response) {
+            error: function () {
                 alert("Có lỗi xảy ra khi xóa tòa nhà. Vui lòng thử lại.");
             },
         });

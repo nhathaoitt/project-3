@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Getter
 public enum Status {
-    CHUA_XY_LY("Chưa xử lý"),
+    CHUA_XU_LY("Chưa xử lý"),
     DANG_XU_LY("Đang xử lý"),
     DA_XU_LY("Đã xử lý");
     private final String name;

@@ -8,7 +8,6 @@ import com.devon.building.entity.User;
 import com.devon.building.model.dto.AssignmentBuildingDTO;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
-import com.devon.building.model.dto.UserDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
 import com.devon.building.model.response.StaffResponseDTO;
@@ -113,7 +112,7 @@ public class BuildingServiceImpl implements BuildingService {
         for (User user : staffs) {
             StaffResponseDTO staffResponseDTO = new StaffResponseDTO();
             staffResponseDTO.setId(user.getId());
-            staffResponseDTO.setUserName(user.getUserName());
+            staffResponseDTO.setUserName(user.getUsername());
             staffResponseDTO.setChecked("");
             if (staffAssignedIds.contains(user.getId())) {
                 staffResponseDTO.setChecked("checked");
@@ -136,6 +135,7 @@ public class BuildingServiceImpl implements BuildingService {
             return rentArea;
         }).toList();
     }
+
     private void convertToByte(BuildingDTO buildingDTO, Building building) {
         try {
             if (buildingDTO.getBase64Image() != null && !buildingDTO.getBase64Image().isEmpty()) {

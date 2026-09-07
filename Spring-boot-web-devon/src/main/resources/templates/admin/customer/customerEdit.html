@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <th:block th:replace="~{/admin/common/header ::header}"></th:block>
+</head>
+<body class="no-skin" style="font-family: 'Abel', sans-serif;">
+<th:block th:replace="~{/admin/common/menu :: menu}"></th:block>
+<div class="main-container" id="main-container">
+    <th:block th:replace="~{admin/common/sidebar :: sidebar}"></th:block>
+    <div class="main-content">
+        <div class="main-content-inner">
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>
+                        Dashboard
+                        <small>
+                            <i class="ace-icon fa fa-angle-double-right"></i>
+                            overview &amp; stats
+                        </small>
+                    </h1>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="widget-box">
+                            <div class="widget-header">
+                                <h4 class="widget-title">Thông tin khách hàng</h4>
+                            </div>
+
+                            <div class="widget-body">
+                                <div class="widget-main">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <form
+                                                    class="form-horizontal"
+                                                    role="form"
+                                                    id="form-edit"
+                                                    method="get"
+                                                    th:action="@{/admin/customers/edit}"
+                                                    th:object="${customer}"
+                                            >
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="fullName"
+                                                    >
+                                                        Tên khách hàng
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="fullName"
+                                                                name="fullName"
+                                                                placeholder="Nhập tên khách hàng..."
+                                                                class="form-control"
+                                                                th:value="${customer.fullName}"
+                                                        />
+                                                        <span
+                                                                class="error-message"
+                                                                style="display: none; color: red"
+                                                                id="noName"
+                                                        >Vui lòng nhập tên khách hàng
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="phone"
+                                                    >
+                                                        Số điện thoại
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="phone"
+                                                                name="phone"
+                                                                placeholder="Nhập số điện thoại..."
+                                                                class="form-control"
+                                                                th:value="${customer.phone}"
+                                                        />
+                                                        <span
+                                                                class="error-message"
+                                                                style="display: none; color: red"
+                                                                id="noPhone"
+                                                        >Vui lòng nhập số điện thoại đúng định dạng
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="email"
+                                                    >
+                                                        Email
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="email"
+                                                                name="email"
+                                                                placeholder="Nhập email..."
+                                                                class="form-control"
+                                                                th:value="${customer.email}"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="companyName"
+                                                    >
+                                                        Tên công ty
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="companyName"
+                                                                name="companyName"
+                                                                placeholder="Nhập tên công ty..."
+                                                                class="form-control"
+                                                                th:value="${customer.companyName}"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="demand"
+                                                    >
+                                                        Nhu cầu
+                                                    </label>
+
+                                                    <div class="col-sm-6">
+                                                        <input
+                                                                type="text"
+                                                                id="demand"
+                                                                name="demand"
+                                                                placeholder="Nhập nhu cầu..."
+                                                                class="form-control"
+                                                                th:value="${customer.demand}"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label
+                                                            class="col-sm-3 control-label no-padding-right"
+                                                            for="status"
+                                                    >
+                                                        Trạng thái xử lý
+                                                    </label>
+                                                    <div class="col-sm-5">
+                                                        <select
+                                                                name="status"
+                                                                id="status"
+                                                                class="form-control"
+                                                        >
+                                                            <option value="">--chọn Trạng thái xử lý--</option>
+                                                            <option th:each="st: ${status}" th:value="${st.key}" th:text="${st.value}" th:selected="${st.key == customer.status}"></option>
+                                                        </select>
+                                                        <span
+                                                                class="error-message"
+                                                                style="display: none; color: red"
+                                                                id="noStatus"
+                                                        >Vui lòng chọn trạng thái xử lý</span
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div class="form-actions center">
+                                                    <a th:href="@{/admin/customers/list}">
+                                                        <button class="btn btn-danger" type="button">
+                                                            <i
+                                                                    class="ace-icon glyphicon glyphicon-remove"
+                                                            ></i>
+                                                            Hủy thao tác
+                                                        </button>
+                                                    </a>
+
+                                                    &nbsp; &nbsp; &nbsp;
+                                                    <button
+                                                            class="btn btn-success"
+                                                            type="button"
+                                                            id="btnAddCustomer"
+                                                    >
+                                                        <i class="ace-icon glyphicon glyphicon-ok"></i>
+                                                        <span  th:text="${customer.id != null ? 'Cập nhật thông tin khách hàng' : 'Thêm khách hàng'}"></span>
+                                                    </button>
+                                                </div>
+                                                <input type="hidden" name="id" th:value="${customer.id}">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.page-content -->
+        </div>
+    </div>
+    <th:block th:replace="~{admin/common/footer :: footer}"></th:block>
+</div>
+<th:block th:replace="~{admin/common/common-scripts :: jquery}"></th:block>
+<script>
+    function resetErrorMessage() {
+        document.getElementById("noName").style.display = "none";
+        document.getElementById("noPhone").style.display = "none";
+        document.getElementById("noStatus").style.display = "none";
+    }
+
+    function validateDataBuilding(data) {
+        resetErrorMessage();
+        var isValid = true;
+        if (!data["fullName"] || data["fullName"].trim() === "") {
+            document.getElementById("noName").style.display = "block";
+            isValid = false;
+        }
+        if (!data["status"] || data["status"].trim() === "") {
+            document.getElementById("noStatus").style.display = "block";
+            isValid = false;
+        }
+        var phoneRegex = /^0\d{9}$/;
+        if (
+            !data["phone"] ||
+            !phoneRegex.test(data["phone"])
+        ) {
+            document.getElementById("noPhone").style.display =
+                "block";
+            isValid = false;
+        }
+        return isValid;
+    }
+    $("#btnAddCustomer").click(async function (e) {
+        e.preventDefault();
+        const data = {}; //khoi tao 1 doi tuong
+        const dataForm = $("#form-edit").serializeArray(); // chuyen doi tuong thanh json
+        let method = "POST";
+        $.each(dataForm, function (i, it) {
+            if (it.name != null) {
+                data[it.name] = it.value;
+            }
+        });
+        if(data['id'] != null && data['id'] !== "") {
+            method = "PUT";
+        }else{
+            method = "POST";
+            delete data['id'];
+        }
+        if (!validateDataBuilding(data)) {
+            alert(
+                "Dữ liệu đầu vào không hợp lệ vui lòng kiểm tra các trường thông tin",
+            );
+        } else {
+            $.ajax({
+                url: "/web/customers", //api gui ve
+                type: method, // phuong thuc
+                data: JSON.stringify(data), //chuyen doi object thanh json gui xuong server
+                contentType: "application/json", // dinh dang du lieu gui di la Json
+                dataType: "json", // du lieu gui xuong server la JSON
+                success: function (response) {
+                    alert(response.message);
+                },
+                error: function (response) {
+                    alert(response.responseJSON.detail.join("\n"));
+                },
+            });
+        }
+    });
+</script>
+</body>
+</html>

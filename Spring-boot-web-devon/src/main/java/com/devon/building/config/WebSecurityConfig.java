@@ -1,6 +1,7 @@
 package com.devon.building.config;
 
 
+import com.devon.building.filters.JwtTokenFilter;
 import com.devon.building.security.CustomSuccessHandler;
 import com.devon.building.service.impl.CustomOAuth2UserService;
 import com.devon.building.service.impl.CustomOidcUserService;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +27,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class WebSecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
+    private final JwtTokenFilter jwtTokenFilter;
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -41,14 +44,17 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOidcUserService oidcUserService, CustomOAuth2UserService customOAuth2UserService) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/users/list").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("MANAGER")
                         .requestMatchers((HttpMethod.DELETE), "/api/buildings/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/admin/register").permitAll()
+                        .requestMatchers("/admin/assets/**", "/admin/assets/js/**", "/admin/assets/css/**").permitAll()
                         .requestMatchers("/admin/**").hasAnyRole("STAFF", "MANAGER")
                         .anyRequest().permitAll()
                 )
+                .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"))
                 .formLogin(form -> form
                                 .loginPage("/admin/login")

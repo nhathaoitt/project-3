@@ -178,7 +178,7 @@
                 contentType: "application/json", // dinh dang du lieu gui di la Json
                 dataType: "json", // du lieu gui xuong server la JSON
                 success: function (response){
-                    alert(response.messages);
+                    alert(response.message);
                 },
                 error: function (response) {
                     alert(response.responseJSON.detail.join("\n"));

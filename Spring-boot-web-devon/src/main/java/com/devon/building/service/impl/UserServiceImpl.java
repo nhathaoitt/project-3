@@ -3,11 +3,13 @@ package com.devon.building.service.impl;
 import com.devon.building.constant.SystemConstant;
 import com.devon.building.entity.User;
 import com.devon.building.model.dto.UserDTO;
+import com.devon.building.model.dto.UserRegisterDTO;
 import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.UserService;
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,16 +22,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public PaginationResult<User> listUserInfo(String key, int page, int maxResult, int maxNavigationPage) {
@@ -137,6 +138,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<Long, String> getStaffs() {
         List<User> staffs = userRepository.findByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
-        return staffs.stream().collect(Collectors.toMap(User::getId, User::getUserName));
+        return staffs.stream().collect(Collectors.toMap(User::getId, User::getUsername));
+    }
+
+    @Override
+    public void registerUser(UserRegisterDTO userRegisterDTO) throws Exception {
+        String userName = userRegisterDTO.getUserName();
+        if (userRepository.findByUserNameAndActiveTrue(userName) != null) {
+            throw new DataIntegrityViolationException(" User name has already exists");
+        }
+        User user = User.builder()
+                .userName(userRegisterDTO.getUserName())
+                .encrytedPassword(passwordEncoder.encode(userRegisterDTO.getPassword()))
+                .fullName(userRegisterDTO.getFullName())
+                .active(true)
+                .userRole(SystemConstant.USER_ROLE)
+                .build();
+        userRepository.saveAndFlush(user);
     }
 }

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách khách hàng</title>
+    <th:block th:replace="~{admin/common/header :: header}"></th:block>
+</head>
+<body class="no-skin">
+<th:block th:replace="~{admin/common/menu :: menu}"></th:block>
+<div class="main-container" id="main-container">
+    <th:block th:replace="~{admin/common/sidebar :: sidebar}"></th:block>
+
+    <div class="main-content">
+        <div class="main-content-inner">
+            <div class="breadcrumbs" id="breadcrumbs">
+                <script type="text/javascript">
+                    try {
+                        ace.settings.check("breadcrumbs", "fixed");
+                    } catch (e) {
+                    }
+                </script>
+
+                <ul class="breadcrumb">
+                    <li>
+                        <i class="ace-icon fa fa-home home-icon"></i>
+                        <a href="#">Home</a>
+                    </li>
+                    <li class="active">Dashboard</li>
+                </ul>
+            </div>
+
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>
+                        List of customers
+                        <small>
+                            <i class="ace-icon fa fa-angle-double-right"></i>
+                            quản lý khách hàng
+                        </small>
+                    </h1>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="widget-box">
+                            <div class="widget-header">
+                                <h4 class="widget-title">Tìm kiếm</h4>
+                                <span class="widget-toolbar">
+                                    <a href="#" data-action="collapse"><i class="ace-icon fa fa-chevron-up"></i></a>
+                                    <a href="#" data-action="close"><i class="ace-icon fa fa-times"></i></a>
+                                </span>
+                            </div>
+
+                            <!-- widget-body nằm ngoài widget-header -->
+                            <div class="widget-body">
+                                <div class="widget-main">
+                                    <form class="form-horizontal"
+                                          th:action="@{/admin/customers/list}"
+                                          method="get"
+                                          id="formSearchCustomer"
+                                          th:object="${customerSearchRequest}">
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <input type="hidden" name="page" id="page"
+                                                       th:value="${customerSearchRequest.page}"/>
+                                                <div class="col-xs-12">
+                                                    <div class="col-xs-6">
+                                                        <label>Tên khách hàng</label>
+                                                        <input type="text" id="fullName" name="fullName"
+                                                               th:value="${customerSearchRequest.fullName}"
+                                                               placeholder="Nhập tên khách hàng" class="form-control"/>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <label>Email</label>
+                                                        <input type="text" id="email" name="email"
+                                                               th:value="${customerSearchRequest.email}"
+                                                               placeholder="Nhập email" class="form-control"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <div class="col-xs-12">
+                                                    <div class="col-xs-6">
+                                                        <label>Số điện thoại</label>
+                                                        <input type="text" id="phone" name="phone"
+                                                               th:value="${customerSearchRequest.phone}"
+                                                               placeholder="Nhập số điện thoại" class="form-control"/>
+                                                    </div>
+                                                    <div class="col-xs-3">
+                                                        <label>Nhân viên</label>
+                                                        <select name="staffId" id="staffId" class="form-control">
+                                                            <option value="">-- Chọn Nhân Viên --</option>
+                                                            <option th:each="staff:${staffs}" th:value="${staff.key}"
+                                                                    th:text="${staff.value}"
+                                                                    th:selected="${staff.key == customerSearchRequest.staffId}"
+                                                            >
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xs-3">
+                                                        <label>Trạng thái</label>
+                                                        <select name="status" id="status" class="form-control">
+                                                            <option value="">-- Chọn trạng thái --</option>
+                                                            <option th:each="s : ${status}" th:value="${s.key}"
+                                                                    th:text="${s.value}"
+                                                                    th:selected="${s.key == customerSearchRequest.status}"
+                                                            >
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <div class="col-xs-12">
+                                                    <div class="col-xs-5">
+                                                        <button type="submit" class="btn btn-xs btn-success"
+                                                                id="btnSearchCustomer">
+                                                            <i class="ace-icon glyphicon glyphicon-search"></i>
+                                                            Tìm kiếm
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="pull-right">
+                                <a th:href="@{/admin/customers/edit}">
+                                    <button
+                                            class="btn btn-app btn-success btn-sm"
+                                            title="Thêm tòa nhà"
+                                            id="btnAddCustomer"
+                                    >
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="20"
+                                                height="20"
+                                                fill="currentColor"
+                                                class="bi bi-building-add"
+                                                viewBox="0 0 16 16"
+                                        >
+                                            <path
+                                                    d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0"
+                                            />
+                                            <path
+                                                    d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6.5a.5.5 0 0 1-1 0V1H3v14h3v-2.5a.5.5 0 0 1 .5-.5H8v4H3a1 1 0 0 1-1-1z"
+                                            />
+                                            <path
+                                                    d="M4.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"
+                                            />
+                                        </svg>
+                                    </button>
+                                </a>
+                                <th:block sec:authorize="hasRole('ROLE_MANAGER')">
+                                    <button
+                                            class="btn btn-app btn-danger btn-sm"
+                                            title="Xóa tòa nhà"
+                                            id="btnDeleteCustomer"
+                                    >
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="20"
+                                                height="20"
+                                                fill="currentColor"
+                                                class="bi bi-building-dash"
+                                                viewBox="0 0 16 16"
+                                        >
+                                            <path
+                                                    d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1"
+                                            />
+                                            <path
+                                                    d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6.5a.5.5 0 0 1-1 0V1H3v14h3v-2.5a.5.5 0 0 1 .5-.5H8v4H3a1 1 0 0 1-1-1z"
+                                            />
+                                            <path
+                                                    d="M4.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"
+                                            />
+                                        </svg>
+                                    </button>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hr hr-18 dotted hr-double"></div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <table
+                                    id="customerList"
+                                    class="table table-striped table-bordered table-hover"
+                            >
+                                <thead>
+                                <tr>
+                                    <th class="center">
+                                        <label class="pos-rel">
+                                            <input type="checkbox" class="ace"/>
+                                            <span class="lbl"></span>
+                                        </label>
+                                    </th>
+                                    <th>Tên khách hàng</th>
+                                    <th>Di động</th>
+                                    <th>Email</th>
+                                    <th>Nhu cầu</th>
+                                    <th>Người thêm</th>
+                                    <th>Ngày thêm</th>
+                                    <th>Tình trạng</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr th:each="customer : ${result.getList()}" th:id="'customer_' + ${customer.id}">
+                                    <td class="center">
+                                        <label class="pos-rel">
+                                            <input type="checkbox" class="ace" th:value="${customer.id}"/>
+                                            <span class="lbl"></span>
+                                        </label>
+                                    </td>
+
+                                    <td th:text="${customer.fullName}"></td>
+                                    <td th:text="${customer.phone}"></td>
+                                    <td th:text="${customer.email}"></td>
+                                    <td th:text="${customer.demand}"></td>
+                                    <td th:text="${customer.getCreatedBy()}"></td>
+                                    <td th:text="${customer.createdDate}"></td>
+                                    <td th:text="${status[customer.status]}"></td>
+                                    <td>
+                                        <div class="hidden-sm hidden-xs btn-group">
+                                            <th:block sec:authorize="hasRole('ROLE_MANAGER')">
+                                                <button
+                                                        class="btn btn-xs btn-success"
+                                                        title="Giao tòa nhà"
+                                                        th:onclick="'assignmentCustomer(' + ${customer.id} + ')'"
+                                                >
+                                                    <i class="ace-icon fa fa-users"></i>
+                                                </button>
+                                            </th:block>
+                                            <a th:href="@{|/admin/customers/${customer.id}/update|}"
+                                               class="btn btn-xs btn-info"
+                                               title="Sửa tòa nhà">
+                                                <i class="ace-icon fas fa-pencil-alt bigger-120"></i>
+                                            </a>
+                                            <th:block sec:authorize="hasRole('ROLE_MANAGER')">
+                                                <button
+                                                        class="btn btn-xs btn-danger"
+                                                        title="Xóa tòa nhà"
+                                                        th:onclick="'deleteBuilding(' + ${customer.id} + ')'"
+                                                >
+                                                    <i class="fa fa-trash bigger-120"></i>
+                                                </button>
+                                            </th:block>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="page-navigator" th:if="${result.totalPages > 1}">
+                                <th:block th:each="page: ${result.navigationPages}">
+                                    <a th:if="${page != -1}" class="nav-item"
+                                       href="javascript:void(0)"
+                                       th:data-page="${page}"
+                                       th:text="${page}"
+                                       onclick="goToPage(this)"></a>
+
+                                    <span th:if="${page == -1}" class="nav-item"> ... </span>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{admin/common/footer :: footer}"></th:block>
+<div
+        class="modal fade"
+        id="assignmentCustomerModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    Danh sách nhân viên
+                </h5>
+                <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table
+                        id="staff-list"
+                        class="table table-striped table-bordered table-hover"
+                >
+                    <thead>
+                    <tr>
+                        <th class="center">
+                            <label class="pos-rel">
+                                <input type="checkbox" class="ace"/>
+                                <span class="lbl"></span>
+                            </label>
+                        </th>
+                        <th class="center">Tên nhân viên</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+                    <input type="hidden" id="customerId" value=""/>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    Close
+                </button>
+                <button type="button" class="btn btn-info" id="btnAssignCustomer">
+                    Giao tòa nhà
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{admin/common/common-scripts :: jquery}"></th:block>
+<script>
+    $("#btnSearchCustomer").click(function (e) {
+        e.preventDefault();
+        $("#page").val(1);
+        $("#formSearchCustomer").submit();
+    });
+
+    function goToPage(element) {
+        const page = $(element).data("page");
+        $("#page").val(page);
+        $("#formSearchCustomer").submit();
+    }
+
+    function assignmentCustomer(customerId) {
+        $("#assignmentCustomerModal").modal();
+        $("#customerId").val(customerId);
+        loadStaffForCustomer(customerId);
+    }
+
+    function deleteBuilding(customerId){
+        var customerIds = customerId;
+        deleteCustomers(customerIds);
+    }
+    $("#btnDeleteCustomer").click(function (e){
+        var selectedCustomerIds = $(
+            "#customerList tbody input[type='checkbox']:checked"
+        ).map(function (){
+            return $(this).val();
+        }).get();
+        if(selectedCustomerIds.length === 0){
+            alert("Chọn ít nhất 1 tòa nhà để xóa");
+            return;
+        }
+        deleteCustomers(selectedCustomerIds);
+    });
+    function deleteCustomers(customerIds){
+        var ids = Array.isArray(customerIds)? customerIds: [customerIds];
+        $.ajax({
+            url: "/web/customers/" + ids.join(","),
+            type: "DELETE",
+            dataType: "json", // du lieu gui xuong server la JSON
+            success: function () {
+                $.each(ids, function (index, item) {
+                    $('#customer_' + item).remove();
+                })
+                alert("Xóa tòa nhà thành công");
+            },
+            error: function () {
+                alert("Có lỗi xảy ra khi xóa tòa nhà. Vui lòng thử lại.");
+            },
+        });
+    }
+    function loadStaffForCustomer(customerId) {
+        $.ajax({
+            url: "/admin/customers?customerId=" + customerId, //api gui ve
+            type: "GET", // phuong thuc
+            dataType: "json", // du lieu gui xuong server la JSON
+            success: function (response) {
+                let row = "";
+                $.each(response.data, function (index, item) {
+                    row += '<tr>';
+                    row += ' <td class="center" ><label class="pos-rel"> <input type="checkbox" class="ace" value="' + item.id + '" ' + item.checked + '>';
+                    row += '<span class="lbl"></span>';
+                    row += '</label></td>';
+                    row += '<td class="center">' + item.userName + '</td>';
+                    row += '</tr>';
+                });
+                $('#staff-list tbody').html(row);
+            },
+            error: function (response) {
+                alert(response.responseJSON.detail.join("\n"));
+            },
+        });
+    }
+    $("#btnAssignCustomer").click(function (e){
+       var data = {};
+       var customerId = $("#customerId").val();
+       var staffIds = $("#staff-list tbody input[type='checkbox']:checked")
+            .map(function (){
+                return $(this).val();
+            }).get();
+        data["customerId"] = customerId;
+        data["staffIds"] = staffIds;
+       $.ajax({
+          url: "/web/customers/assign",
+          type: "POST",
+          data: JSON.stringify(data),
+          contentType: "application/json",
+          dataType: "json",
+          success: function (response){
+              $("#assignmentCustomerModal").hide();
+              alert(response.message());
+          },
+          error: function (){
+              alert("Có lỗi khi giao tòa nhà. Vui lòng thử lại");
+          }
+       });
+    });
+    //# sourceURL=custom-customer-script.js
+</script>
+</body>
+</html>

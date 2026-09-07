@@ -2,6 +2,7 @@ package com.devon.building.service;
 
 import com.devon.building.entity.User;
 import com.devon.building.model.dto.UserDTO;
+import com.devon.building.model.dto.UserRegisterDTO;
 import com.devon.building.pagination.PaginationResult;
 
 import java.util.List;
@@ -18,4 +19,6 @@ public interface UserService {
     void delete(List<Long> ids);
 
     Map<Long, String> getStaffs();
+
+    void registerUser(UserRegisterDTO userRegisterDTO) throws Exception;
 }

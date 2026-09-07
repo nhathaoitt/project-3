@@ -3,7 +3,9 @@ package com.devon.building.api.admin;
 import com.devon.building.model.dto.PasswordDTO;
 import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.model.dto.UserDTO;
+import com.devon.building.model.dto.UserRegisterDTO;
 import com.devon.building.service.UserService;
+import com.devon.building.utils.MessageUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -73,5 +75,28 @@ public class UserAPI {
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody PasswordDTO passwordDTO) {
         ResponseDTO responseDTO = new ResponseDTO();
         return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Object> registerUser(@RequestBody @Valid UserRegisterDTO userRegisterDTO, BindingResult bindingResult) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
+            responseDTO.setMessage("Register failed");
+            responseDTO.setDetail(errorMessages);
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+        if (!userRegisterDTO.getPassword().equals(userRegisterDTO.getRetypePassword())) {
+            responseDTO.setMessage(MessageUtils.PASSWORD_NOT_MATCH);
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+        try {
+            userService.registerUser(userRegisterDTO);
+            responseDTO.setMessage(MessageUtils.REGISTER_SUCCESSFULLY);
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception e) {
+            responseDTO.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
     }
 }
