@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.List;
 
 @Entity
@@ -34,5 +35,6 @@ public class Customer extends BaseEntity implements Serializable {
                 joinColumns = @JoinColumn(name = "customerid"),
                 inverseJoinColumns = @JoinColumn(name = "staffid"))
     private List<User> staffs;
-
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transaction> transactions;
 }

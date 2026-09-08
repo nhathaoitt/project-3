@@ -1,4 +1,4 @@
-package com.devon.building.api.web;
+package com.devon.building.api.admin;
 
 import com.devon.building.model.dto.AssignmentCustomerDTO;
 import com.devon.building.model.dto.CustomerDTO;

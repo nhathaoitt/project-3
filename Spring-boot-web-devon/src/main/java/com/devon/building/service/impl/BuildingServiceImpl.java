@@ -108,18 +108,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     private static List<StaffResponseDTO> getStaffResponseDTOS(List<User> staffs, Set<Long> staffAssignedIds) {
-        List<StaffResponseDTO> staffResponseDTOS = new ArrayList<>();
-        for (User user : staffs) {
-            StaffResponseDTO staffResponseDTO = new StaffResponseDTO();
-            staffResponseDTO.setId(user.getId());
-            staffResponseDTO.setUserName(user.getUsername());
-            staffResponseDTO.setChecked("");
-            if (staffAssignedIds.contains(user.getId())) {
-                staffResponseDTO.setChecked("checked");
-            }
-            staffResponseDTOS.add(staffResponseDTO);
-        }
-        return staffResponseDTOS;
+        return getStaffResponseDTOS(staffs, staffAssignedIds);
     }
 
     private void saveBuildingFinal(Building building) {

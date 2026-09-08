@@ -11,18 +11,19 @@ import java.util.List;
 public class SecurityUtils {
     public static String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication==null){
+        if (authentication == null) {
             return null;
         }
         Object principal = authentication.getPrincipal();
-        if(principal instanceof UserDetails userDetails){
+        if (principal instanceof UserDetails userDetails) {
             return userDetails.getUsername();
         }
         return authentication.getName();
     }
-    public static List<String> getAuthorities(){
+
+    public static List<String> getAuthorities() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication==null){
+        if (authentication == null) {
             return Collections.emptyList();
         }
         return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();

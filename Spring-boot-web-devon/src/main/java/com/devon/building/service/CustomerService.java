@@ -22,4 +22,5 @@ public interface CustomerService {
     void updateCustomer(CustomerDTO customerDTO);
 
     void deleteCustomer(List<Long> ids);
+
 }

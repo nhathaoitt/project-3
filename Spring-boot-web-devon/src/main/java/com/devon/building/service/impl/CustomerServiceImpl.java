@@ -42,9 +42,11 @@ public class CustomerServiceImpl implements CustomerService {
                 .status(customerDTO.getStatus())
                 .active(true)
                 .build();
-        if(!currentName.isBlank()){
+        if (!currentName.isBlank()) {
             customer.setCreatedBy(currentName);
-        }else {customer.setCreatedBy("Anonymous");}
+        } else {
+            customer.setCreatedBy("Anonymous");
+        }
         customerRepository.saveAndFlush(customer);
     }
 
@@ -53,7 +55,9 @@ public class CustomerServiceImpl implements CustomerService {
         PaginationResult<Customer> customers = customerRepository.findCustomer(customerSearchRequest, page, maxResult, maxNavigationPage);
         List<CustomerResponseDTO> result = new ArrayList<>();
         for (Customer customer : customers.getList()) {
-            result.add(customerConvertor.toCustomerResponse(customer));
+            if (customer.getActive() == true) {
+                result.add(customerConvertor.toCustomerResponse(customer));
+            }
         }
         PaginationResult<CustomerResponseDTO> paginationResult = new PaginationResult<>();
         paginationResult.setMaxResult(maxResult);
@@ -109,10 +113,10 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomer(List<Long> ids) {
         List<Customer> customers = customerRepository.findAllById(ids);
-        if(customers.isEmpty()){
+        if (customers.isEmpty()) {
             throw new EntityNotFoundException("Customers not be found");
-        }else{
-            for(Customer customer : customers){
+        } else {
+            for (Customer customer : customers) {
                 customer.setActive(false);
                 saveAll(customer);
             }
@@ -120,6 +124,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private static List<StaffResponseDTO> getStaffsDTO(List<User> staffs, Set<Long> staffAssignIds) {
+        return getStaffResponseDTOS(staffs, staffAssignIds);
+    }
+
+    static List<StaffResponseDTO> getStaffResponseDTOS(List<User> staffs, Set<Long> staffAssignIds) {
         List<StaffResponseDTO> staffResponseDTOs = new ArrayList<>();
         for (User staff : staffs) {
             StaffResponseDTO staffResponseDTO = new StaffResponseDTO();
@@ -133,6 +141,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
         return staffResponseDTOs;
     }
+
     private void saveAll(Customer customer) {
         customerRepository.saveAndFlush(customer);
     }

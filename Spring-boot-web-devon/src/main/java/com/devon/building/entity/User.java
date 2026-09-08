@@ -62,6 +62,9 @@ public class User extends BaseEntity implements Serializable, UserDetails {
     @Column(name = "github_account_id")
     String githubAccountId;
 
+    @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transaction> transactions;
+
     @Lob
     @Column(name = "image", length = Integer.MAX_VALUE, nullable = true)
     private byte[] image;

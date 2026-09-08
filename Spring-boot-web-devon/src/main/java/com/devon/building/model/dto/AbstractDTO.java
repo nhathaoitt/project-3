@@ -1,5 +1,6 @@
 package com.devon.building.model.dto;
 
+import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,4 +19,5 @@ public class AbstractDTO implements Serializable {
     private String createdBy;
     private Date modifiedDate;
     private String modifiedBy;
+
 }
