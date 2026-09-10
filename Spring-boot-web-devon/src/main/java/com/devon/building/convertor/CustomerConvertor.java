@@ -13,7 +13,9 @@ public class CustomerConvertor {
     private final ModelMapper modelMapper;
 
     public Customer toCustomer(CustomerDTO customerDTO) {
-        return modelMapper.map(customerDTO, Customer.class);
+        Customer customer = modelMapper.map(customerDTO, Customer.class);
+        customer.setActive(true);
+        return customer;
     }
 
     public CustomerResponseDTO toCustomerResponse(Customer customer) {
