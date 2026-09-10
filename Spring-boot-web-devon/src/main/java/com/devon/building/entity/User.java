@@ -64,6 +64,8 @@ public class User extends BaseEntity implements Serializable, UserDetails {
 
     @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
+    @ManyToMany(mappedBy = "staffs")
+    private List<Customer> customers;
 
     @Lob
     @Column(name = "image", length = Integer.MAX_VALUE, nullable = true)

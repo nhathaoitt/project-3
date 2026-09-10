@@ -64,7 +64,14 @@ public class CustomerController {
     }
 
     @GetMapping("{id}/update")
-    public String updateCustomer(@PathVariable Long id, @ModelAttribute CustomerDTO customerDTO, Model model) {
+    public String updateCustomer(@PathVariable Long id,  Model model) {
+        if (SecurityUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)) {
+            User user = userService.getUserInfo(SecurityUtils.getCurrentUsername());
+            boolean isAssigned = user.getCustomers().stream().anyMatch(customer -> customer.getId().equals(id));
+            if (!isAssigned) {
+                return "404";
+            }
+        }
         CustomerDTO customer = customerService.getCustomerById(id);
         model.addAttribute(CUSTOMER, customer);
         model.addAttribute(STATUS, Status.getStatus());
