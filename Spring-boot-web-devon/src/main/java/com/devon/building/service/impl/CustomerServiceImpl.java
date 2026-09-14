@@ -16,6 +16,7 @@ import com.devon.building.service.CustomerService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerConvertor customerConvertor;
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public void saveCustomer(CustomerDTO customerDTO, String currentName) {
@@ -98,12 +100,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void updateCustomer(CustomerDTO customerDTO) {
         Customer existcustomer = customerRepository.findById(customerDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Not found"));
-        existcustomer.setFullName(customerDTO.getFullName());
-        existcustomer.setEmail(customerDTO.getEmail());
-        existcustomer.setPhone(customerDTO.getPhone());
-        existcustomer.setCompanyName(customerDTO.getCompanyName());
-        existcustomer.setDemand(customerDTO.getDemand());
-        existcustomer.setStatus(customerDTO.getStatus());
+        modelMapper.map(customerDTO, existcustomer);
         saveAll(existcustomer);
     }
 

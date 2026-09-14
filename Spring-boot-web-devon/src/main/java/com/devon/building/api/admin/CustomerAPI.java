@@ -23,7 +23,7 @@ import java.util.List;
 public class CustomerAPI {
     private final CustomerService customerService;
     @PostMapping
-    public ResponseEntity<Object> addCustomer(@RequestBody @Valid CustomerDTO customerDTO, BindingResult bindingResult) {
+    public ResponseEntity<ResponseDTO> addCustomer(@RequestBody @Valid CustomerDTO customerDTO, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
@@ -39,7 +39,7 @@ public class CustomerAPI {
         return ResponseEntity.ok().body(responseDTO);
     }
     @PostMapping("/assign")
-    public ResponseEntity<Object> assignCustomer(@RequestBody @Valid AssignmentCustomerDTO assignmentCustomerDTO, BindingResult bindingResult) {
+    public ResponseEntity<ResponseDTO> assignCustomer(@RequestBody @Valid AssignmentCustomerDTO assignmentCustomerDTO, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
@@ -57,7 +57,7 @@ public class CustomerAPI {
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
     @PutMapping
-    public ResponseEntity<Object> updateCustomer(@RequestBody @Valid CustomerDTO customerDTO, BindingResult bindingResult) {
+    public ResponseEntity<ResponseDTO> updateCustomer(@RequestBody @Valid CustomerDTO customerDTO, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
@@ -75,7 +75,7 @@ public class CustomerAPI {
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
     @DeleteMapping("/{ids}")
-    public ResponseEntity<Object> deleteCustomer(@PathVariable("ids") List<Long> ids) {
+    public ResponseEntity<ResponseDTO> deleteCustomer(@PathVariable("ids") List<Long> ids) {
         ResponseDTO responseDTO = new ResponseDTO();
         if(!ids.isEmpty()){
             customerService.deleteCustomer(ids);

@@ -438,6 +438,7 @@
                         <div class="page-navigator" th:if="${result.totalPages > 1}">
                             <th:block th:each="page: ${result.navigationPages}">
                                 <a th:if="${page != -1}" class="nav-item"
+                                   th:classappend="${page == result.currentPage} ? 'active-page' : ''"
                                    href="javascript:void(0)"
                                    th:data-page="${page}"
                                    th:text="${page}"

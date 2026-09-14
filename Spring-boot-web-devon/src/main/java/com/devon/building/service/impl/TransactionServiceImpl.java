@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -64,15 +65,17 @@ public class TransactionServiceImpl implements TransactionService {
         staff.setId(transactionRequest.getStaffId());
         transaction.setStaff(staff);
         transaction.setCreatedBy(currentName);
-        transaction.setModifiedBy(currentName);
         transactionRepository.saveAndFlush(transaction);
     }
 
     @Override
     public void updateTransaction(TransactionRequest transactionRequest) {
-        Transaction transaction = transactionRepository.findById(transactionRequest.getId()).orElseThrow(() -> new EntityNotFoundException("Not found"));
-        transaction.setNote(transactionRequest.getNote());
-        transactionRepository.saveAndFlush(transaction);
+        Transaction existTransaction = transactionRepository.findById(transactionRequest.getId()).orElseThrow(() -> new EntityNotFoundException("Not found"));
+        String currentName = SecurityContextHolder.getContext().getAuthentication().getName();
+        existTransaction.setNote(transactionRequest.getNote());
+        existTransaction.setModifiedDate(new Date());
+        existTransaction.setModifiedBy(currentName);
+        transactionRepository.saveAndFlush(existTransaction);
     }
 
     @Override

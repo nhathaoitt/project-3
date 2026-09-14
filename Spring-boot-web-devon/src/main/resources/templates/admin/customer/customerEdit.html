@@ -518,6 +518,7 @@
             success: function (response) {
                 $("#transaction").modal("hide");
                 alert(response.message);
+                window.location.reload();
             },
             error: function (response) {
                 alert(response.responseJSON.detail.join("\n"));

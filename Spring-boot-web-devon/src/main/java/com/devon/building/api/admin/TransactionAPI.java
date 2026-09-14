@@ -26,7 +26,7 @@ public class TransactionAPI {
     private final TransactionService transactionService;
 
     @PostMapping
-    public ResponseEntity<Object> createTransaction(@RequestBody @Valid TransactionRequest transactionRequest, BindingResult bindingResult) {
+    public ResponseEntity<ResponseDTO> createTransaction(@RequestBody @Valid TransactionRequest transactionRequest, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
@@ -43,7 +43,7 @@ public class TransactionAPI {
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
     @PutMapping
-    public ResponseEntity<Object> updateTransaction(@RequestBody @Valid TransactionRequest transactionRequest, BindingResult bindingResult) {
+    public ResponseEntity<ResponseDTO> updateTransaction(@RequestBody @Valid TransactionRequest transactionRequest, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
@@ -60,7 +60,7 @@ public class TransactionAPI {
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteTransaction(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO> deleteTransaction(@PathVariable Long id) {
         ResponseDTO responseDTO = new ResponseDTO();
         if(id != null){
             transactionService.deleteTransaction(id);

@@ -12,12 +12,6 @@ import org.springframework.stereotype.Component;
 public class CustomerConvertor {
     private final ModelMapper modelMapper;
 
-    public Customer toCustomer(CustomerDTO customerDTO) {
-        Customer customer = modelMapper.map(customerDTO, Customer.class);
-        customer.setActive(true);
-        return customer;
-    }
-
     public CustomerResponseDTO toCustomerResponse(Customer customer) {
         CustomerResponseDTO customerResponse = CustomerResponseDTO.builder()
                 .fullName(customer.getFullName())
