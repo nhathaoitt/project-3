@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long>, CustomerRepositoryCustom {
     public void deleteByIdIn(List<Long> ids);
+    boolean existsByPhoneAndActiveTrue(String phone);
 }

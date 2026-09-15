@@ -22,6 +22,7 @@ import java.util.List;
 @RequestMapping("/web/customers")
 public class CustomerAPI {
     private final CustomerService customerService;
+
     @PostMapping
     public ResponseEntity<ResponseDTO> addCustomer(@RequestBody @Valid CustomerDTO customerDTO, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
@@ -31,13 +32,24 @@ public class CustomerAPI {
             responseDTO.setDetail(errors);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
         }
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentName = authentication.getName(); // lay username hien tai
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentName = authentication.getName(); // lay username hien tai
 
-        customerService.saveCustomer(customerDTO, currentName);
-        responseDTO.setMessage("Successfully added customer");
-        return ResponseEntity.ok().body(responseDTO);
+            customerService.saveCustomer(customerDTO, currentName);
+            responseDTO.setMessage("Successfully added customer");
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (IllegalArgumentException e) {
+            responseDTO.setMessage("Failed to add customer");
+            responseDTO.setDetail(List.of(e.getMessage()));
+            return ResponseEntity.badRequest().body(responseDTO);
+        } catch (Exception e) {
+            responseDTO.setMessage("Failed to add customer");
+            responseDTO.setDetail(List.of(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDTO);
+        }
     }
+
     @PostMapping("/assign")
     public ResponseEntity<ResponseDTO> assignCustomer(@RequestBody @Valid AssignmentCustomerDTO assignmentCustomerDTO, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
@@ -47,15 +59,15 @@ public class CustomerAPI {
             responseDTO.setDetail(errors);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
         }
-        if(assignmentCustomerDTO.getCustomerId() != null && assignmentCustomerDTO.getStaffIds() != null){
+        if (assignmentCustomerDTO.getCustomerId() != null && assignmentCustomerDTO.getStaffIds() != null) {
             customerService.assignmentCustomer(assignmentCustomerDTO.getCustomerId(), assignmentCustomerDTO.getStaffIds());
             responseDTO.setMessage("Successfully assigned customer");
-        }
-        else {
+        } else {
             responseDTO.setMessage("Failed to assign customer");
         }
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
+
     @PutMapping
     public ResponseEntity<ResponseDTO> updateCustomer(@RequestBody @Valid CustomerDTO customerDTO, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
@@ -65,7 +77,7 @@ public class CustomerAPI {
             responseDTO.setDetail(errors);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
         }
-        if(customerDTO.getId() == null){
+        if (customerDTO.getId() == null) {
             responseDTO.setMessage("Failed to update customer");
             responseDTO.setDetail(List.of("Updated customer required id"));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
@@ -74,13 +86,14 @@ public class CustomerAPI {
         responseDTO.setMessage("Successfully updated customer");
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
+
     @DeleteMapping("/{ids}")
     public ResponseEntity<ResponseDTO> deleteCustomer(@PathVariable("ids") List<Long> ids) {
         ResponseDTO responseDTO = new ResponseDTO();
-        if(!ids.isEmpty()){
+        if (!ids.isEmpty()) {
             customerService.deleteCustomer(ids);
             responseDTO.setMessage("Successfully deleted customer");
-        }else{
+        } else {
             responseDTO.setMessage("Failed to delete customer");
             responseDTO.setDetail(List.of("Deleted failed"));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);

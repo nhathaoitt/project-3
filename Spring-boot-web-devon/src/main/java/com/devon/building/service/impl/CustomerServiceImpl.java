@@ -35,7 +35,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void saveCustomer(CustomerDTO customerDTO, String currentName) {
-        Customer customer = Customer.builder()
+        String phone = (customerDTO.getPhone() != null) ? customerDTO.getPhone().trim() : "";
+        if(customerRepository.existsByPhoneAndActiveTrue(phone)) {
+            throw new IllegalArgumentException("Phone number already exists");
+        }
+        Customer newCustomer = Customer.builder()
                 .fullName(customerDTO.getFullName())
                 .email(customerDTO.getEmail())
                 .companyName(customerDTO.getCompanyName())
@@ -44,16 +48,17 @@ public class CustomerServiceImpl implements CustomerService {
                 .status(customerDTO.getStatus())
                 .active(true)
                 .build();
-        if (!currentName.isBlank()) {
-            customer.setCreatedBy(currentName);
+        if (currentName != null && !currentName.isBlank()) {
+            newCustomer.setCreatedBy(currentName);
         } else {
-            customer.setCreatedBy("Anonymous");
+            newCustomer.setCreatedBy("Anonymous");
         }
-        customerRepository.saveAndFlush(customer);
+        customerRepository.saveAndFlush(newCustomer);
     }
 
     @Override
-    public PaginationResult<CustomerResponseDTO> getCustomers(CustomerSearchRequest customerSearchRequest, int page, int maxResult, int maxNavigationPage) {
+    public PaginationResult<CustomerResponseDTO> getCustomers(CustomerSearchRequest customerSearchRequest, int page,
+                                                              int maxResult, int maxNavigationPage) {
         PaginationResult<Customer> customers = customerRepository.findCustomer(customerSearchRequest, page, maxResult, maxNavigationPage);
         List<CustomerResponseDTO> result = new ArrayList<>();
         for (Customer customer : customers.getList()) {
