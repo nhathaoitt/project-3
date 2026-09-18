@@ -75,7 +75,7 @@
                 </div>
                 <div class="col-12 col-md-6">
                     <h2 class="title-lienhe"><strong>Liên hệ với chúng tôi</strong></h2>
-                    <form id="contactForm" class="form-horizontal" th:action="@{/web/buildings/contact}" th:object="${customer}">
+                    <form id="contactForm" class="form-horizontal" th:object="${customer}">
                         <div class="form-group">
                             <div class="col-xs-6">
                                 <input type="text" class="form-control" placeholder="Họ và tên" name="fullName" th:value="${customer.fullName}">
@@ -142,17 +142,17 @@
 
     function validateDataCustomer(data) {
         resetErrorMessage();
-        var isValid = true;
+        let isValid = true;
         if (!data["fullName"] || data["fullName"].trim() === "") {
             document.getElementById("noFullName").style.display = "block";
             isValid = false;
         }
-        var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!data["email"] || !emailRegex.test(data["email"])) {
             document.getElementById("noEmail").style.display = "block";
             isValid = false;
         }
-        var phoneRegex = /^0\d{9}$/;
+        const phoneRegex = /^0\d{9}$/;
         if (!data["phone"] || !phoneRegex.test(data["phone"])
         ) {
             document.getElementById("noPhone").style.display ="block";

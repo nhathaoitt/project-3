@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Project-Backend-Devon.iml" filepath="$PROJECT_DIR$/.idea/Project-Backend-Devon.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Spring-boot-web-devon/shoe-ShoppingCart.iml" filepath="$PROJECT_DIR$/Spring-boot-web-devon/shoe-ShoppingCart.iml" />
     </modules>
   </component>
 </project>

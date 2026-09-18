@@ -36,7 +36,6 @@
 
                     <!-- Form -->
                     <form id="registerForm"
-                          th:action="@{/admin/register}"
                           th:object="${userRegister}">
 
                         <!-- Full Name -->
@@ -139,7 +138,7 @@
                         </div>
 
                         <!-- Submit -->
-                        <button class="register-btn" type="submit" id="btnRegister">
+                        <button class="register-btn" type="button" id="btnRegister">
                             <i class="fas fa-user-plus me-2"></i>Register
                         </button>
                     </form>
@@ -151,11 +150,11 @@
                             <a href="#" class="social-btn" title="Register with Facebook">
                                 <i class="fab fa-facebook-f"></i>
                             </a>
-                            <a href="#" class="social-btn" title="Register with Google">
+                            <a th:href="@{/oauth2/authorization/google}" class="social-btn" title="Register with Google">
                                 <i class="fab fa-google"></i>
                             </a>
-                            <a href="#" class="social-btn" title="Register with Twitter">
-                                <i class="fab fa-twitter"></i>
+                            <a th:href="@{/oauth2/authorization/github}" class="social-btn" title="Register with GitHub">
+                                <i class="fab fa-github"></i>
                             </a>
                         </div>
                     </div>
@@ -163,7 +162,7 @@
                     <!-- Login Link -->
                     <div class="login-link">
                         Already have an account?
-                        <a th:href="@{/admin/login}">Login here</a>
+                        <a th:href="@{/login}">Login here</a>
                     </div>
 
                 </div>
@@ -174,107 +173,6 @@
 <th:block th:replace="~{admin/common/common-scripts :: jquery}"></th:block>
 <!--JavaScript for password toggle-->
 <script>
-    // function togglePassword(fieldId) {
-    //     const field = document.getElementById(fieldId);
-    //     const toggle = field.nextElementSibling;
-    //     const icon = toggle.querySelector('i');
-    //
-    //     if (field.type === 'password') {
-    //         field.type = 'text';
-    //         icon.classList.remove('fa-eye');
-    //         icon.classList.add('fa-eye-slash');
-    //     } else {
-    //         field.type = 'password';
-    //         icon.classList.remove('fa-eye-slash');
-    //         icon.classList.add('fa-eye');
-    //     }
-    // }
-    //
-    // // Form validation
-    // document.getElementById('registerForm').addEventListener('submit', function (e) {
-    //     e.preventDefault();
-    //
-    //     const password = document.getElementById('password').value;
-    //     const confirmPassword = document.getElementById('confirmPassword').value;
-    //     const isAgreeTerms = document.getElementById('isAgreeTerms').checked;
-    //
-    //     if (!isAgreeTerms) {
-    //         alert('Bạn phải đồng ý với điều khoản cộng đồng!');
-    //         return false;
-    //     }
-    //
-    //     const fullName = document.getElementById('fullName').value.trim();
-    //     if (fullName.length < 2) {
-    //         alert('Tên phải có ít nhất 2 ký tự!');
-    //         return false;
-    //     }
-    //
-    //     const username = document.getElementById('username').value.trim();
-    //     if (username.length < 3) {
-    //         alert('Tên đăng nhập phải có ít nhất 3 ký tự!');
-    //         return false;
-    //     }
-    //
-    //     if (password !== confirmPassword) {
-    //         alert('Mật khẩu không khớp!');
-    //         return false;
-    //     }
-    //
-    //     if (password.length < 6) {
-    //         alert('Mật khẩu phải chứa ít nhất 6 ký tự!');
-    //         return false;
-    //     }
-    //
-    //     const formData = {
-    //         fullName: fullName,
-    //         username: username,
-    //         password: password,
-    //         confirmPassword: confirmPassword
-    //     };
-    //
-    //     // Add loading effect to register button
-    //     const registerBtn = document.querySelector('.register-btn');
-    //     registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-    //     registerBtn.disabled = true;
-    //
-    //     // Send AJAX request
-    //     fetch('/api/user/register', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify(formData)
-    //     })
-    //         .then(response => {
-    //             if (!response.ok) {
-    //                 return response.text().then(text => {
-    //                     throw new Error(text || 'Đăng ký thất bại');
-    //                 });
-    //             }
-    //             return response.json();
-    //         })
-    //         .then(data => {
-    //             alert('Đăng ký thành công. Vui lòng đăng nhập.');
-    //             window.location.href = '/login';
-    //         })
-    //         .catch(error => {
-    //             var message = "Đăng ký thất bại!";
-    //             try {
-    //                 // Nếu message là JSON, lấy ra phần message
-    //                 const errorJson = JSON.parse(error.message);
-    //                 if (errorJson.message) {
-    //                     message = errorJson.message;
-    //                 }
-    //             } catch (e) {
-    //                 // Nếu không phải JSON thì hiện mặc định
-    //                 message = error.message || message;
-    //             }
-    //             alert(message);
-    //             // Reset button
-    //             registerBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Register';
-    //             registerBtn.disabled = false;
-    //         });
-    // });
     function resetErrorMessage() {
         document.getElementById("noFullName").style.display = "none";
         document.getElementById("noUsername").style.display = "none";
@@ -302,6 +200,7 @@
         }
         return isValid;
     }
+
     $("#btnRegister").click(function (e){
        e.preventDefault()
         const password = document.getElementById('password').value;
@@ -333,10 +232,10 @@
                 dataType: "json", // du lieu gui xuong server la JSON
                 success: function (response){
                     alert(response.message);
-                    window.location.href = "/admin/login";
+                    window.location.href = "/login";
                 },
-                error: function (respone){
-                    alert(respone.responseJSON.detail.join("\n"))
+                error: function (response){
+                    alert(response.responseJSON.message)
                 }
             });
         }

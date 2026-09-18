@@ -52,13 +52,13 @@ public class AdminController {
     }
 
     // GET: Show Login Page
-    @GetMapping(value = {"/admin/login"})
+    @GetMapping(value = {"/login"})
     public String login(Model model) {
         return "login";
     }
 
     // GET: Show Register Page
-    @GetMapping("/admin/register")
+    @GetMapping(value = "/register")
     public String register(Model model) {
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO();
         model.addAttribute("userRegister", userRegisterDTO);

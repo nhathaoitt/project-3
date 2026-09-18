@@ -8,8 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -33,10 +31,7 @@ public class CustomerAPI {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
         }
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String currentName = authentication.getName(); // lay username hien tai
-
-            customerService.saveCustomer(customerDTO, currentName);
+            customerService.saveCustomer(customerDTO);
             responseDTO.setMessage("Successfully added customer");
             return ResponseEntity.ok().body(responseDTO);
         } catch (IllegalArgumentException e) {

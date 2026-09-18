@@ -1,4 +1,4 @@
-package com.devon.building.controller;
+package com.devon.building.controller.web;
 
 import com.devon.building.entity.Building;
 import com.devon.building.form.CustomerForm;
@@ -67,13 +67,6 @@ public class MainController {
     @RequestMapping("/")
     public String home() {
         return "index";
-    }
-
-
-    @GetMapping("/register")
-    public String register(Model model) {
-        model.addAttribute("customer", new CustomerForm());
-        return "register";
     }
 
     // Building List

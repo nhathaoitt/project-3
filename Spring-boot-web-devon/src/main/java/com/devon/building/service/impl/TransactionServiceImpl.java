@@ -38,10 +38,10 @@ public class TransactionServiceImpl implements TransactionService {
                         .code(transaction.getCode())
                         .build();
                 transactionDTO.setId(transaction.getId());
-                transactionDTO.setCreatedBy(transaction.getCreatedBy());
-                transactionDTO.setCreatedDate(transaction.getCreatedDate());
-                transactionDTO.setModifiedDate(transaction.getModifiedDate());
-                transactionDTO.setModifiedBy(transaction.getModifiedBy());
+//                transactionDTO.setCreatedBy(transaction.getCreatedBy());
+//                transactionDTO.setCreatedDate(transaction.getCreatedDate());
+//                transactionDTO.setModifiedDate(transaction.getModifiedDate());
+//                transactionDTO.setModifiedBy(transaction.getModifiedBy());
                 result.add(transactionDTO);
             }
         }

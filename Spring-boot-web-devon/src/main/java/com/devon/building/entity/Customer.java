@@ -3,8 +3,6 @@ package com.devon.building.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.util.List;
 
 @Entity
@@ -14,8 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name = "customer")
-public class Customer extends BaseEntity implements Serializable {
-
+public class Customer extends BaseEntity {
     @Column(name = "fullname", length = 255, nullable = false)
     String fullName;
     @Column(name = "phone", length = 255, nullable = false)
@@ -30,10 +27,10 @@ public class Customer extends BaseEntity implements Serializable {
     String status;
     @Column(name = "is_active")
     Boolean active;
+
+
     @ManyToMany
-    @JoinTable(name = "assignmentcustomer",
-                joinColumns = @JoinColumn(name = "customerid"),
-                inverseJoinColumns = @JoinColumn(name = "staffid"))
+    @JoinTable(name = "assignmentcustomer", joinColumns = @JoinColumn(name = "customerid"), inverseJoinColumns = @JoinColumn(name = "staffid"))
     private List<User> staffs;
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;

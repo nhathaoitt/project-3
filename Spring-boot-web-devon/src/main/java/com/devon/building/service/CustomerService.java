@@ -9,7 +9,7 @@ import com.devon.building.pagination.PaginationResult;
 import java.util.List;
 
 public interface CustomerService {
-    void saveCustomer(CustomerDTO customerDTO, String currentName);
+    CustomerResponseDTO saveCustomer(CustomerDTO customerDTO);
 
     PaginationResult<CustomerResponseDTO> getCustomers(CustomerSearchRequest customerSearchRequest, int page, int maxResult, int maxNavigationPage);
 

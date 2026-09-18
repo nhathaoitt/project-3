@@ -44,7 +44,7 @@ public class BaseEntity implements Serializable {
 
     @PrePersist
     protected void onCreate() {
-        createdDate = new Date();
-        modifiedDate = new Date();
+        modifiedDate = null;
+        modifiedBy = null;
     }
 }

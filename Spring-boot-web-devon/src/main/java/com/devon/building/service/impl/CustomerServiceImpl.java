@@ -34,26 +34,15 @@ public class CustomerServiceImpl implements CustomerService {
     private final ModelMapper modelMapper;
 
     @Override
-    public void saveCustomer(CustomerDTO customerDTO, String currentName) {
+    public CustomerResponseDTO saveCustomer(CustomerDTO customerDTO) {
         String phone = (customerDTO.getPhone() != null) ? customerDTO.getPhone().trim() : "";
         if(customerRepository.existsByPhoneAndActiveTrue(phone)) {
             throw new IllegalArgumentException("Phone number already exists");
         }
-        Customer newCustomer = Customer.builder()
-                .fullName(customerDTO.getFullName())
-                .email(customerDTO.getEmail())
-                .companyName(customerDTO.getCompanyName())
-                .phone(customerDTO.getPhone())
-                .demand(customerDTO.getDemand())
-                .status(customerDTO.getStatus())
-                .active(true)
-                .build();
-        if (currentName != null && !currentName.isBlank()) {
-            newCustomer.setCreatedBy(currentName);
-        } else {
-            newCustomer.setCreatedBy("Anonymous");
-        }
+        Customer newCustomer = modelMapper.map(customerDTO,Customer.class);
+        newCustomer.setActive(true);
         customerRepository.saveAndFlush(newCustomer);
+        return customerConvertor.toCustomerResponse(newCustomer);
     }
 
     @Override
@@ -62,7 +51,7 @@ public class CustomerServiceImpl implements CustomerService {
         PaginationResult<Customer> customers = customerRepository.findCustomer(customerSearchRequest, page, maxResult, maxNavigationPage);
         List<CustomerResponseDTO> result = new ArrayList<>();
         for (Customer customer : customers.getList()) {
-            if (customer.getActive() == true) {
+            if (Boolean.TRUE.equals(customer.getActive())) {
                 result.add(customerConvertor.toCustomerResponse(customer));
             }
         }

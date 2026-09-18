@@ -9,16 +9,20 @@ import com.devon.building.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
@@ -49,8 +53,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/admin/users/list").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("MANAGER")
                         .requestMatchers((HttpMethod.DELETE), "/api/buildings/**").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/admin/register").permitAll()
-                        .requestMatchers("/admin/assets/**", "/admin/assets/js/**", "/admin/assets/css/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/admin/register").permitAll()
+//                        .requestMatchers("/admin/assets/**", "/admin/assets/js/**", "/admin/assets/css/**").permitAll()
                         .requestMatchers("/admin/**").hasAnyRole("STAFF", "MANAGER")
                         .requestMatchers(HttpMethod.PUT,"/web/customers").hasAnyRole("MANAGER","STAFF")
                         .requestMatchers(HttpMethod.POST,"/web/customers/assign").hasRole("MANAGER")
@@ -60,29 +64,28 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"))
                 .formLogin(form -> form
-                                .loginPage("/admin/login")
+                                .loginPage("/login")
                                 .loginProcessingUrl("/j_spring_security_check")
                                 .successHandler(myAuthenticationSuccessHandler())
-//                        .defaultSuccessUrl("/admin/accountInfo", true)
                                 .failureUrl("/admin/login?incorrectAccount")
                                 .usernameParameter("userName")
                                 .passwordParameter("password")
                                 .permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/admin/login")
+                        .loginPage("/login")
                         .successHandler(myAuthenticationSuccessHandler())
 
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
                                 .oidcUserService(oidcUserService))
-                        .failureUrl("/admin/login?incorrectAccount")
+                        .failureUrl("/login?incorrectAccount")
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .logoutUrl("/admin/logout")
+                        .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
                         .permitAll()
                 );
@@ -93,5 +96,14 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationSuccessHandler myAuthenticationSuccessHandler() {
         return new CustomSuccessHandler();
+    }
+
+    @Bean
+    public AuditorAware<String> auditorProvider() {
+        return () -> {
+            return Optional.ofNullable(
+                    SecurityContextHolder.getContext().getAuthentication().getName()
+            );
+        };
     }
 }

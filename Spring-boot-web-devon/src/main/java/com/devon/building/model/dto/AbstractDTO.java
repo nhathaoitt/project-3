@@ -1,6 +1,5 @@
 package com.devon.building.model.dto;
 
-import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import lombok.Setter;
 
