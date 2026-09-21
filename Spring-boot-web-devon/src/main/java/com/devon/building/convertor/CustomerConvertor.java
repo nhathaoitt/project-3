@@ -21,8 +21,10 @@ public class CustomerConvertor {
                 .status(customer.getStatus())
                 .build();
         customerResponse.setId(customer.getId());
-//        customerResponse.setCreatedDate(customer.getCreatedDate());
-//        customerResponse.setCreatedBy(customer.getCreatedBy());
+        customerResponse.setCreatedBy(customer.getCreatedBy());
+        customerResponse.setCreatedDate(customer.getCreatedDate());
+        customerResponse.setModifiedBy(customer.getModifiedBy());
+        customerResponse.setModifiedDate(customer.getModifiedDate());
         return customerResponse;
     }
 

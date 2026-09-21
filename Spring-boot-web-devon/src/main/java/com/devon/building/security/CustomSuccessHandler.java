@@ -45,8 +45,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (isUser(roles)) {
             return "/";
         }
-
-        return "/access-denied";
+        authentication.setAuthenticated(false);
+        return "/403";
     }
 
     private boolean isAdmin(List<String> roles) {

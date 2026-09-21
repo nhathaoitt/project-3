@@ -161,7 +161,7 @@
                                                                 id="status"
                                                                 class="form-control"
                                                         >
-                                                            <option value="">--chọn Trạng thái xử lý--</option>
+<!--                                                            <option value="">&#45;&#45;chọn Trạng thái xử lý&#45;&#45;</option>-->
                                                             <option th:each="st: ${status}" th:value="${st.key}"
                                                                     th:text="${st.value}"
                                                                     th:selected="${st.key == customer.status}"></option>
@@ -408,7 +408,7 @@
 
     function validateDataCustomer(data) {
         resetErrorMessage();
-        var isValid = true;
+        let isValid = true;
         if (!data["fullName"] || data["fullName"].trim() === "") {
             document.getElementById("noName").style.display = "block";
             isValid = false;
@@ -417,7 +417,7 @@
             document.getElementById("noStatus").style.display = "block";
             isValid = false;
         }
-        var phoneRegex = /^0\d{9}$/;
+        const phoneRegex = /^0\d{9}$/;
         if (
             !data["phone"] ||
             !phoneRegex.test(data["phone"])
@@ -431,7 +431,7 @@
 
     function validateTransaction(data) {
         resetErrorMessage();
-        var isValid = true;
+        let isValid = true;
         if (!data["note"] || data["note"].trim() === "") {
             document.getElementById("noTransaction").style.display = "block";
             isValid = false;

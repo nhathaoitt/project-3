@@ -107,7 +107,7 @@ public class BuildingServiceImpl implements BuildingService {
         }
     }
 
-    static List<StaffResponseDTO> getStaffResponseDTOS(List<User> staffs, Set<Long> staffAssignIds) {
+    public static List<StaffResponseDTO> getStaffResponseDTOS(List<User> staffs, Set<Long> staffAssignIds) {
         List<StaffResponseDTO> staffResponseDTOs = new ArrayList<>();
         for (User staff : staffs) {
             StaffResponseDTO staffResponseDTO = new StaffResponseDTO();

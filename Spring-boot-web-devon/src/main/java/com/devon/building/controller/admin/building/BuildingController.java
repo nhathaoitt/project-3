@@ -30,7 +30,7 @@ public class BuildingController {
     private static final String TYPECODE = "typeCode";
 
     @GetMapping("/list")
-    public String getBuildings(@RequestParam(value = "page", defaultValue = "1") String pagetr, @ModelAttribute BuildingSearchRequest buildingSearchRequest, Model model) {
+    public String getBuildings(@RequestParam(value = "page", defaultValue = "1") String pagetr, @ModelAttribute(name = "buildingSearchRequest") BuildingSearchRequest buildingSearchRequest, Model model) {
         int page = 1;
         try {
             page = Integer.parseInt(pagetr);
