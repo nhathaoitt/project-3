@@ -20,7 +20,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/admin/transaction")
+@RequestMapping("{api.prefix}/transaction")
 public class TransactionAPI {
     private final UserService userService;
     private final TransactionService transactionService;

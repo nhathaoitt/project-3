@@ -13,11 +13,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class BuildingWebController {
 
-    @GetMapping("/contact")
-    public String contactWeb(Model model) {
-        model.addAttribute("status", Status.getStatus());
-        CustomerResponseDTO customerDTO = new CustomerResponseDTO();
-        model.addAttribute("customer", customerDTO);
-        return "contact";
-    }
+
 }

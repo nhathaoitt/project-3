@@ -32,6 +32,7 @@ public class WebSecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtTokenFilter jwtTokenFilter;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -50,27 +51,28 @@ public class WebSecurityConfig {
         http
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/users/list").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("MANAGER")
-                        .requestMatchers((HttpMethod.DELETE), "/api/buildings/**").hasRole("MANAGER")
+                                .requestMatchers("/admin/users/list").hasRole("MANAGER")
+                                .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("MANAGER")
+                                .requestMatchers(HttpMethod.POST, "/api/buildings/assign").hasRole("MANAGER")
+                                .requestMatchers((HttpMethod.DELETE), "/api/buildings/**").hasRole("MANAGER")
 //                        .requestMatchers(HttpMethod.GET, "/admin/register").permitAll()
 //                        .requestMatchers("/admin/assets/**", "/admin/assets/js/**", "/admin/assets/css/**").permitAll()
-                        .requestMatchers("/admin/**").hasAnyRole("STAFF", "MANAGER")
-                        .requestMatchers(HttpMethod.PUT,"/web/customers").hasAnyRole("MANAGER","STAFF")
-                        .requestMatchers(HttpMethod.POST,"/web/customers/assign").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.DELETE,"/web/customers/**").hasRole("MANAGER")
-                        .anyRequest().permitAll()
+                                .requestMatchers("/admin/**").hasAnyRole("STAFF", "MANAGER")
+                                .requestMatchers(HttpMethod.PUT, "/web/customers").hasAnyRole("MANAGER", "STAFF")
+                                .requestMatchers(HttpMethod.POST, "/web/customers/assign").hasRole("MANAGER")
+                                .requestMatchers(HttpMethod.DELETE, "/web/customers/**").hasRole("MANAGER")
+                                .anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"))
                 .formLogin(form -> form
-                                .loginPage("/login")
-                                .loginProcessingUrl("/j_spring_security_check")
-                                .successHandler(myAuthenticationSuccessHandler())
-                                .failureUrl("/admin/login?incorrectAccount")
-                                .usernameParameter("userName")
-                                .passwordParameter("password")
-                                .permitAll()
+                        .loginPage("/login")
+                        .loginProcessingUrl("/j_spring_security_check")
+                        .successHandler(myAuthenticationSuccessHandler())
+                        .failureUrl("/admin/login?incorrectAccount")
+                        .usernameParameter("userName")
+                        .passwordParameter("password")
+                        .permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")

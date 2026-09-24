@@ -461,7 +461,7 @@
             );
         } else {
             $.ajax({
-                url: "/web/customers", //api gui ve
+                url: "/api/customers", //api gui ve
                 type: method, // phuong thuc
                 data: JSON.stringify(data), //chuyen doi object thanh json gui xuong server
                 contentType: "application/json", // dinh dang du lieu gui di la Json
@@ -510,7 +510,7 @@
             delete data['id'];
         }
         $.ajax({
-            url: "/admin/transaction", //api gui ve
+            url: "/api/transaction", //api gui ve
             type: method, // phuong thuc
             data: JSON.stringify(data), //chuyen doi object thanh json gui xuong server
             contentType: "application/json", // dinh dang du lieu gui di la Json
@@ -529,7 +529,7 @@
     function deleteTransaction(e) {
         var id = $(e).data("id");
         $.ajax({
-            url: "/admin/transaction/" + id,
+            url: "/api/transaction/" + id,
             type: "DELETE",
             dataType: "json", // du lieu gui xuong server la JSON
             success: function () {

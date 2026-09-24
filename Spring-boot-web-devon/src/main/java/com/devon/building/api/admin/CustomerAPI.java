@@ -17,7 +17,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/web/customers")
+@RequestMapping("{api.prefix}/customers")
 public class CustomerAPI {
     private final CustomerService customerService;
 

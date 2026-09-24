@@ -355,7 +355,7 @@
     function deleteCustomers(customerIds) {
         var ids = Array.isArray(customerIds) ? customerIds : [customerIds];
         $.ajax({
-            url: "/web/customers/" + ids.join(","),
+            url: "/api/customers/" + ids.join(","),
             type: "DELETE",
             dataType: "json", // du lieu gui xuong server la JSON
             success: function () {
@@ -372,7 +372,7 @@
 
     function loadStaffForCustomer(customerId) {
         $.ajax({
-            url: "/admin/customers?customerId=" + customerId, //api gui ve
+            url: "/api/customers?customerId=" + customerId, //api gui ve
             type: "GET", // phuong thuc
             dataType: "json", // du lieu gui xuong server la JSON
             success: function (response) {
@@ -403,7 +403,7 @@
         data["customerId"] = customerId;
         data["staffIds"] = staffIds;
         $.ajax({
-            url: "/web/customers/assign",
+            url: "/api/customers/assign",
             type: "POST",
             data: JSON.stringify(data),
             contentType: "application/json",

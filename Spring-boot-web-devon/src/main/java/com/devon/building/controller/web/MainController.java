@@ -1,10 +1,12 @@
 package com.devon.building.controller.web;
 
 import com.devon.building.entity.Building;
+import com.devon.building.enums.Status;
 import com.devon.building.form.CustomerForm;
 import com.devon.building.model.CartInfo;
 import com.devon.building.model.CustomerInfo;
 import com.devon.building.model.ProductInfo;
+import com.devon.building.model.response.CustomerResponseDTO;
 import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.OrderRepository;
 import com.devon.building.repository.ProductRepository;
@@ -69,6 +71,13 @@ public class MainController {
         return "index";
     }
 
+    @GetMapping("/contact")
+    public String contactWeb(Model model) {
+        model.addAttribute("status", Status.getStatus());
+        CustomerResponseDTO customerDTO = new CustomerResponseDTO();
+        model.addAttribute("customer", customerDTO);
+        return "contact";
+    }
     // Building List
     @RequestMapping({"/productList"})
     public String listProductHandler(Model model, //

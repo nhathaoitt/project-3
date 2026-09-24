@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("{api.prefix}/users")
 public class UserAPI {
 
     @Autowired
