@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.devon.building.service.impl.BuildingServiceImpl.getStaffResponseDTOS;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -34,20 +36,18 @@ public class CustomerServiceImpl implements CustomerService {
     private final ModelMapper modelMapper;
 
     @Override
-    public CustomerResponseDTO saveCustomer(CustomerDTO customerDTO) {
+    public void saveCustomer(CustomerDTO customerDTO) {
         String phone = (customerDTO.getPhone() != null) ? customerDTO.getPhone().trim() : "";
-        if(customerRepository.existsByPhoneAndActiveTrue(phone)) {
+        if (customerRepository.existsByPhoneAndActiveTrue(phone)) {
             throw new IllegalArgumentException("Phone number already exists");
         }
-        Customer newCustomer = modelMapper.map(customerDTO,Customer.class);
+        Customer newCustomer = modelMapper.map(customerDTO, Customer.class);
         newCustomer.setActive(true);
         customerRepository.saveAndFlush(newCustomer);
-        return customerConvertor.toCustomerResponse(newCustomer);
     }
 
     @Override
-    public PaginationResult<CustomerResponseDTO> getCustomers(CustomerSearchRequest customerSearchRequest, int page,
-                                                              int maxResult, int maxNavigationPage) {
+    public PaginationResult<CustomerResponseDTO> getCustomers(CustomerSearchRequest customerSearchRequest, int page, int maxResult, int maxNavigationPage) {
         PaginationResult<Customer> customers = customerRepository.findCustomer(customerSearchRequest, page, maxResult, maxNavigationPage);
         List<CustomerResponseDTO> result = new ArrayList<>();
         for (Customer customer : customers.getList()) {
@@ -71,7 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
         List<User> staffs = userRepository.findByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
         Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new EntityNotFoundException("Customer not be found"));
         Set<Long> staffAssignIds = customer.getStaffs().stream().map(User::getId).collect(Collectors.toSet());
-        List<StaffResponseDTO> staffResponseDTOS = getStaffsDTO(staffs, staffAssignIds);
+        List<StaffResponseDTO> staffResponseDTOS = getStaffResponseDTOS(staffs, staffAssignIds);
         responseDTO.setData(staffResponseDTOS);
         responseDTO.setMessage("load staffs successfully");
         return responseDTO;
@@ -104,30 +104,9 @@ public class CustomerServiceImpl implements CustomerService {
         if (customers.isEmpty()) {
             throw new EntityNotFoundException("Customers not be found");
         } else {
-            for (Customer customer : customers) {
-                customer.setActive(false);
-                saveAll(customer);
-            }
+            customers.forEach(customer -> customer.setActive(false));
+            customerRepository.saveAll(customers);
         }
-    }
-
-    private static List<StaffResponseDTO> getStaffsDTO(List<User> staffs, Set<Long> staffAssignIds) {
-        return getStaffResponseDTOS(staffs, staffAssignIds);
-    }
-
-    static List<StaffResponseDTO> getStaffResponseDTOS(List<User> staffs, Set<Long> staffAssignIds) {
-        List<StaffResponseDTO> staffResponseDTOs = new ArrayList<>();
-        for (User staff : staffs) {
-            StaffResponseDTO staffResponseDTO = new StaffResponseDTO();
-            staffResponseDTO.setId(staff.getId());
-            staffResponseDTO.setUserName(staff.getUsername());
-            staffResponseDTO.setChecked("");
-            if (staffAssignIds.contains(staff.getId())) {
-                staffResponseDTO.setChecked("checked");
-            }
-            staffResponseDTOs.add(staffResponseDTO);
-        }
-        return staffResponseDTOs;
     }
 
     private void saveAll(Customer customer) {

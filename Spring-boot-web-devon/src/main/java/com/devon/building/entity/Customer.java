@@ -32,6 +32,7 @@ public class Customer extends BaseEntity {
     @ManyToMany
     @JoinTable(name = "assignmentcustomer", joinColumns = @JoinColumn(name = "customerid"), inverseJoinColumns = @JoinColumn(name = "staffid"))
     private List<User> staffs;
+
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
 }

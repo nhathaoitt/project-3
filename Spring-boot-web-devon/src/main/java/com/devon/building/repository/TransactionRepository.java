@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction,Long> {
-    List<Transaction> findByCustomer_IdAndCode(Long customerId, String code);
+    List<Transaction> findByCustomer_IdAndCodeAndActiveTrue(Long customerId, String code);
 }

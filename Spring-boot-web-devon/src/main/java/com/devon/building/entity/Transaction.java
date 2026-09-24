@@ -19,9 +19,11 @@ public class Transaction extends BaseEntity implements Serializable {
     String note;
     @Column(name = "is_active")
     Boolean active;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customerid", nullable = false)
     private Customer customer;
+
     @ManyToOne
     @JoinColumn(name = "staffid",nullable = false)
     private User staff;
